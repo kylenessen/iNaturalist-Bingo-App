@@ -1,0 +1,29 @@
+[project]
+name = "inaturalist-bingo-app"
+version = "0.1.0"
+description = "Streamlit application to generate bingo cards from iNaturalist observation data"
+requires-python = ">=3.9"
+dependencies = [
+    "streamlit",
+    "requests",
+    "pyinaturalist",
+    "reportlab",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
