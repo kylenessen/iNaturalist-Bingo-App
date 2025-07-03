@@ -89,17 +89,22 @@ def fetch_top_species(place_id: int, top_n: int) -> List[Tuple[int, str, str, st
         if not resp["results"]:
             break
         for taxon in resp["results"]:
-            rank_level = taxon["taxon"]["rank_level"]
-            if rank_level not in SPECIES_RANK_LEVELS:
+            # The API returns observations, and each observation has a "taxon" field
+            if "taxon" not in taxon or taxon["taxon"] is None:
                 continue
-            default_photo = taxon["taxon"].get("default_photo") or {}
+            
+            taxon_data = taxon["taxon"]
+            rank_level = taxon_data.get("rank_level")
+            if not rank_level or rank_level not in SPECIES_RANK_LEVELS:
+                continue
+            default_photo = taxon_data.get("default_photo") or {}
             license_code = default_photo.get("license_code")
             if license_code and license_code.lower() not in ALLOWED_LICENSES:
                 continue
             image_url = default_photo.get("medium_url", "")
-            common_name = taxon["taxon"].get("preferred_common_name") or ""
-            scientific_name = taxon["taxon"].get("name")
-            species.append((taxon["taxon"]["id"], common_name, scientific_name, image_url))
+            common_name = taxon_data.get("preferred_common_name") or ""
+            scientific_name = taxon_data.get("name")
+            species.append((taxon_data["id"], common_name, scientific_name, image_url))
             if len(species) >= top_n:
                 break
         page += 1
