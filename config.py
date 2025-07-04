@@ -23,17 +23,18 @@ PHOTO_SIZE = 1.4 * inch  # will be scaled proportionally
 # Page layout constants for dynamic scaling
 PAGE_WIDTH = 8.5 * inch
 PAGE_HEIGHT = 11 * inch
-MARGIN_SIZE = 1 * inch
-USABLE_WIDTH = PAGE_WIDTH - (2 * MARGIN_SIZE)  # 6.5 inches
-USABLE_HEIGHT = PAGE_HEIGHT - (2 * MARGIN_SIZE) - (0.5 * inch)  # 8.5 inches (minus title space)
+SIDE_MARGIN = 0.5 * inch
+TOP_BOTTOM_MARGIN = 1 * inch
+USABLE_WIDTH = PAGE_WIDTH - (2 * SIDE_MARGIN)  # 7.5 inches
+USABLE_HEIGHT = PAGE_HEIGHT - (2 * TOP_BOTTOM_MARGIN) - (0.5 * inch)  # 8.5 inches (minus title space)
 
 # Dynamic scaling factors by grid size
-# Square images are 75x75px, so we can make them fill most of the cell
+# With reduced margins, we have more space (7.5" vs 6.5")
 GRID_SCALING = {
-    3: {"cell_size": 2.0 * inch, "photo_size": 1.6 * inch, "padding": 4, "text_size": 10},
-    5: {"cell_size": 1.2 * inch, "photo_size": 1.0 * inch, "padding": 3, "text_size": 8},
-    7: {"cell_size": 0.85 * inch, "photo_size": 0.7 * inch, "padding": 2, "text_size": 7},
-    9: {"cell_size": 0.65 * inch, "photo_size": 0.55 * inch, "padding": 1, "text_size": 6},
+    3: {"cell_size": 2.3 * inch, "photo_size": 1.8 * inch, "padding": 4, "text_size": 10},
+    5: {"cell_size": 1.4 * inch, "photo_size": 1.1 * inch, "padding": 3, "text_size": 8},
+    7: {"cell_size": 1.0 * inch, "photo_size": 0.8 * inch, "padding": 2, "text_size": 7},
+    9: {"cell_size": 0.8 * inch, "photo_size": 0.6 * inch, "padding": 1, "text_size": 6},
 }
 
 # API settings

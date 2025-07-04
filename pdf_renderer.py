@@ -53,8 +53,8 @@ class PDFRenderer:
         doc = SimpleDocTemplate(
             buffer,
             pagesize=pagesize,
-            leftMargin=inch,
-            rightMargin=inch,
+            leftMargin=0.5 * inch,
+            rightMargin=0.5 * inch,
             topMargin=inch,
             bottomMargin=inch,
         )
