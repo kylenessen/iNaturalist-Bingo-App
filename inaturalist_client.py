@@ -6,7 +6,6 @@ from typing import List
 
 import requests
 import streamlit as st
-from pyinaturalist import get_observations
 
 from config import (
     ALLOWED_LICENSES,
@@ -42,23 +41,42 @@ class INaturalistClient:
             return None
 
     @st.cache_data(show_spinner=False, ttl=CACHE_TTL)
-    def fetch_top_species(_self, place_id: int, top_n: int) -> List[Species]:
+    def fetch_top_species(
+        _self,
+        place_id: int,
+        top_n: int,
+        selected_months: List[int] | None = None,
+    ) -> List[Species]:
         """Return a list of top‑N species for the given place.
 
         Filters to research‑grade observations at species level or below,
-        and to allowed photo licenses.
+        and to allowed photo licenses. Optionally filters by months.
+
+        Args:
+            place_id: iNaturalist place ID
+            top_n: Number of top species to return
+            selected_months: List of month numbers (1-12) to filter by,
+                or None for all months
         """
         try:
             # Use species_counts endpoint for proper geographic aggregation
+            params = {
+                "place_id": place_id,
+                "verifiable": "true",
+                "quality_grade": "research",
+                "geo": "true",  # Ensure observations are within place boundaries
+                "per_page": min(
+                    top_n * 3, 500
+                ),  # Get extra to account for filtering
+            }
+
+            # Add month filtering if specified
+            if selected_months:
+                params["month"] = ",".join(map(str, selected_months))
+
             resp = requests.get(
                 "https://api.inaturalist.org/v1/observations/species_counts",
-                params={
-                    "place_id": place_id,
-                    "verifiable": "true",
-                    "quality_grade": "research",
-                    "geo": "true",  # Ensure observations are within place boundaries
-                    "per_page": min(top_n * 3, 500),  # Get extra to account for filtering
-                },
+                params=params,
                 timeout=_self.timeout,
             )
             resp.raise_for_status()
@@ -67,11 +85,11 @@ class INaturalistClient:
             return []
 
         species: List[Species] = []
-        
+
         for result in results:
             if len(species) >= top_n:
                 break
-                
+
             if "taxon" not in result or result["taxon"] is None:
                 continue
 
@@ -82,10 +100,7 @@ class INaturalistClient:
 
             default_photo = taxon_data.get("default_photo") or {}
             license_code = default_photo.get("license_code")
-            if (
-                license_code
-                and license_code.lower() not in ALLOWED_LICENSES
-            ):
+            if license_code and license_code.lower() not in ALLOWED_LICENSES:
                 continue
 
             image_url = default_photo.get("medium_url", "")

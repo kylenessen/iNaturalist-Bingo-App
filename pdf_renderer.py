@@ -46,9 +46,7 @@ class PDFRenderer:
         # Page orientation: landscape for 5×5 with photos, else portrait
         grid_size = cards[0].size if cards else 5
         pagesize = (
-            landscape(letter)
-            if grid_size == 5 and photo_on
-            else portrait(letter)
+            landscape(letter) if grid_size == 5 and photo_on else portrait(letter)
         )
 
         doc = SimpleDocTemplate(
@@ -94,9 +92,7 @@ class PDFRenderer:
                     continue
 
                 if isinstance(cell, Species):
-                    flow = self._create_cell_content(
-                        cell, photo_on, common_on, sci_on
-                    )
+                    flow = self._create_cell_content(cell, photo_on, common_on, sci_on)
                     tbl_row.append(flow)
                 else:
                     tbl_row.append([])
@@ -154,8 +150,6 @@ class PDFRenderer:
             name_parts.append(sci_html)
 
         if name_parts:
-            flow.append(
-                Paragraph("<br/>".join(name_parts), self.styles["BodyText"])
-            )
+            flow.append(Paragraph("<br/>".join(name_parts), self.styles["BodyText"]))
 
         return flow
