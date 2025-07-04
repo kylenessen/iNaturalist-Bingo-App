@@ -19,6 +19,8 @@ from reportlab.platypus import (
     TableStyle,
 )
 from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.styles import ParagraphStyle
 
 from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT, GRID_SCALING
 from models import BingoCard, Species
@@ -134,6 +136,7 @@ class PDFRenderer:
         # Get dynamic scaling for this grid size
         scaling = GRID_SCALING.get(grid_size, GRID_SCALING[5])
         photo_size = scaling["photo_size"]
+        text_size = scaling["text_size"]
         
         flow = []
 
@@ -149,7 +152,7 @@ class PDFRenderer:
             except Exception:
                 pass  # Skip image if download fails
 
-        # Add names
+        # Add names with compact styling
         name_parts = []
         if common_on and species.common_name:
             name_parts.append(species.common_name)
@@ -162,6 +165,17 @@ class PDFRenderer:
             name_parts.append(sci_html)
 
         if name_parts:
-            flow.append(Paragraph("<br/>".join(name_parts), self.styles["BodyText"]))
+            # Create a compact text style for smaller grids
+            compact_style = ParagraphStyle(
+                'CompactText',
+                parent=self.styles["BodyText"],
+                fontSize=text_size,
+                leading=text_size + 1,
+                alignment=TA_CENTER,
+                spaceAfter=0,
+                spaceBefore=0,
+            )
+            text_content = "<br/>".join(name_parts)
+            flow.append(Paragraph(text_content, compact_style))
 
         return flow
