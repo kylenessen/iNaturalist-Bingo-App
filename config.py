@@ -23,10 +23,9 @@ PHOTO_SIZE = 1.4 * inch  # will be scaled proportionally
 # Page layout constants for dynamic scaling
 PAGE_WIDTH = 8.5 * inch
 PAGE_HEIGHT = 11 * inch
-SIDE_MARGIN = 0.5 * inch
-TOP_BOTTOM_MARGIN = 1 * inch
-USABLE_WIDTH = PAGE_WIDTH - (2 * SIDE_MARGIN)  # 7.5 inches
-USABLE_HEIGHT = PAGE_HEIGHT - (2 * TOP_BOTTOM_MARGIN) - (0.5 * inch)  # 8.5 inches (minus title space)
+MARGIN_SIZE = 0.5 * inch  # Uniform margins on all sides
+USABLE_WIDTH = PAGE_WIDTH - (2 * MARGIN_SIZE)  # 7.5 inches
+USABLE_HEIGHT = PAGE_HEIGHT - (2 * MARGIN_SIZE) - (0.5 * inch)  # 9.5 inches (minus title space)
 
 # Dynamic scaling factors by grid size
 # With reduced margins, we have more space (7.5" vs 6.5")

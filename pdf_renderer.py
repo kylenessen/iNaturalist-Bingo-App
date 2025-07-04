@@ -55,8 +55,8 @@ class PDFRenderer:
             pagesize=pagesize,
             leftMargin=0.5 * inch,
             rightMargin=0.5 * inch,
-            topMargin=inch,
-            bottomMargin=inch,
+            topMargin=0.5 * inch,
+            bottomMargin=0.5 * inch,
         )
 
         elements = []
