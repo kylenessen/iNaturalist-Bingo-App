@@ -34,6 +34,33 @@ class BingoApp:
 
     def _render_form(self) -> dict | None:
         """Render the input form and return form data if submitted."""
+        # Time filtering options (outside form for dynamic updates)
+        st.subheader("Time Filtering")
+        time_filter_enabled = st.checkbox("Filter by months", value=False)
+        selected_months = []
+        if time_filter_enabled:
+            month_names = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ]
+            selected_months = st.multiselect(
+                "Select months to include",
+                options=list(range(1, 13)),
+                format_func=lambda x: month_names[x - 1],
+                help="Species will be filtered to only include observations "
+                "from these months",
+            )
+
         with st.form("controls"):
             place_query = st.text_input("iNaturalist place (name or ID)")
             grid_size = st.radio(
@@ -51,6 +78,7 @@ class BingoApp:
             )
             seed = st.number_input("Random seed (optional)", value=0)
             free_square = st.checkbox("Include centre FREE square (5×5 only)")
+
             photo_on = st.checkbox("Display photo", value=True)
             common_on = st.checkbox("Display common name", value=True)
             sci_on = st.checkbox("Display scientific name", value=True)
@@ -71,6 +99,9 @@ class BingoApp:
                 "common_on": common_on,
                 "sci_on": sci_on,
                 "title": title,
+                "selected_months": (
+                    selected_months if time_filter_enabled else None
+                ),
             }
 
         return None
@@ -89,7 +120,9 @@ class BingoApp:
             return
 
         # Fetch species data
-        species_pool = self._fetch_species_data(place_id, form_data["top_n"])
+        species_pool = self._fetch_species_data(
+            place_id, form_data["top_n"], form_data["selected_months"]
+        )
         if not species_pool:
             return
 
@@ -123,11 +156,18 @@ class BingoApp:
         else:
             return self.client.lookup_place_id(place_query)
 
-    def _fetch_species_data(self, place_id: int, top_n: int) -> List[Any] | None:
+    def _fetch_species_data(
+        self,
+        place_id: int,
+        top_n: int,
+        selected_months: List[int] | None,
+    ) -> List[Any] | None:
         """Fetch species data from iNaturalist."""
         with st.spinner("Fetching species list from iNaturalist…"):
             try:
-                return self.client.fetch_top_species(place_id, top_n)
+                return self.client.fetch_top_species(
+                    place_id, top_n, selected_months
+                )
             except Exception as e:
                 st.error(f"Error fetching species data: {e}")
                 return None

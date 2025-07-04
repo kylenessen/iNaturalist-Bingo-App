@@ -16,16 +16,11 @@ class BingoGenerator:
         self.species_pool = species_pool
 
     def generate_card(
-        self,
-        grid_size: int,
-        free_square: bool = False,
-        seed: int | None = None
+        self, grid_size: int, free_square: bool = False, seed: int | None = None
     ) -> BingoCard:
         """Generate a single bingo card with the specified parameters."""
         if grid_size**2 > len(self.species_pool) + (1 if free_square else 0):
-            raise ValueError(
-                "Not enough species to fill the requested card size"
-            )
+            raise ValueError("Not enough species to fill the requested card size")
 
         grid = self._build_grid(grid_size, free_square, seed)
         return BingoCard(
