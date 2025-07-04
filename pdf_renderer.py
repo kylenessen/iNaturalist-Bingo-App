@@ -93,7 +93,13 @@ class PDFRenderer:
             tbl_row = []
             for cell in row:
                 if cell == "FREE":
-                    p = Paragraph("FREE", self.styles["Heading2"])
+                    # Create centered style for FREE text
+                    free_style = ParagraphStyle(
+                        'CenteredFree',
+                        parent=self.styles["Heading2"],
+                        alignment=TA_CENTER,
+                    )
+                    p = Paragraph("FREE", free_style)
                     tbl_row.append(p)
                     continue
 
