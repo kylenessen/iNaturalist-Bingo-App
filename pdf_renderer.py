@@ -24,6 +24,7 @@ from reportlab.lib.styles import ParagraphStyle
 
 from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT, GRID_SCALING
 from models import BingoCard, Species
+from image_processor import process_image_for_bingo
 
 
 class PDFRenderer:
@@ -143,14 +144,20 @@ class PDFRenderer:
         # Add photo if enabled and available
         if photo_on and species.image_url:
             try:
+                # Download the image
                 img_bytes = requests.get(
                     species.image_url, timeout=self.timeout
                 ).content
-                img = Image(io.BytesIO(img_bytes))
+                
+                # Process image (center crop to square)
+                cropped_bytes = process_image_for_bingo(img_bytes)
+                
+                # Create ReportLab Image object
+                img = Image(io.BytesIO(cropped_bytes))
                 img._restrictSize(photo_size, photo_size)
                 flow.append(img)
             except Exception:
-                pass  # Skip image if download fails
+                pass  # Skip image if download or processing fails
 
         # Add names with compact styling
         name_parts = []

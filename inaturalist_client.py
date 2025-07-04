@@ -103,7 +103,7 @@ class INaturalistClient:
             if license_code and license_code.lower() not in ALLOWED_LICENSES:
                 continue
 
-            image_url = default_photo.get("square_url") or default_photo.get("medium_url", "")
+            image_url = default_photo.get("medium_url", "")
             common_name = taxon_data.get("preferred_common_name") or ""
             scientific_name = taxon_data.get("name") or ""
 
