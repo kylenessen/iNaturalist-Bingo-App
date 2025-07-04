@@ -34,6 +34,33 @@ class BingoApp:
 
     def _render_form(self) -> dict | None:
         """Render the input form and return form data if submitted."""
+        # Time filtering options (outside form for dynamic updates)
+        st.subheader("Time Filtering")
+        time_filter_enabled = st.checkbox("Filter by months", value=False)
+        selected_months = []
+        if time_filter_enabled:
+            month_names = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ]
+            selected_months = st.multiselect(
+                "Select months to include",
+                options=list(range(1, 13)),
+                format_func=lambda x: month_names[x - 1],
+                help="Species will be filtered to only include observations "
+                "from these months",
+            )
+
         with st.form("controls"):
             place_query = st.text_input("iNaturalist place (name or ID)")
             grid_size = st.radio(
@@ -51,33 +78,6 @@ class BingoApp:
             )
             seed = st.number_input("Random seed (optional)", value=0)
             free_square = st.checkbox("Include centre FREE square (5×5 only)")
-
-            # Time filtering options
-            st.subheader("Time Filtering")
-            time_filter_enabled = st.checkbox("Filter by months", value=False)
-            selected_months = []
-            if time_filter_enabled:
-                month_names = [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December",
-                ]
-                selected_months = st.multiselect(
-                    "Select months to include",
-                    options=list(range(1, 13)),
-                    format_func=lambda x: month_names[x - 1],
-                    help="Species will be filtered to only include observations "
-                    "from these months",
-                )
 
             photo_on = st.checkbox("Display photo", value=True)
             common_on = st.checkbox("Display common name", value=True)
