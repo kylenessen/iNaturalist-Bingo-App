@@ -50,7 +50,7 @@ class BingoGenerator:
         shuffled = self.species_pool.copy()
         rnd.shuffle(shuffled)
 
-        needed = grid_size**2 - (1 if free_square and grid_size == 5 else 0)
+        needed = grid_size**2 - (1 if free_square else 0)
         cells = shuffled[:needed]
 
         grid: BingoGrid = []
@@ -59,7 +59,7 @@ class BingoGenerator:
         for r in range(grid_size):
             row: List[BingoCell] = []
             for c in range(grid_size):
-                if free_square and grid_size == 5 and r == c == grid_size // 2:
+                if free_square and r == c == grid_size // 2:
                     row.append("FREE")
                 else:
                     row.append(cells[idx])

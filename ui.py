@@ -63,8 +63,8 @@ class BingoApp:
 
         with st.form("controls"):
             place_query = st.text_input("iNaturalist place (name or ID)")
-            grid_size = st.radio(
-                "Card size", options=[3, 5], format_func=lambda x: f"{x} × {x}"
+            grid_size = st.selectbox(
+                "Card size", options=[3, 5, 7, 9], format_func=lambda x: f"{x} × {x}"
             )
             top_n = st.slider(
                 "Species pool size (Top‑N)",
@@ -77,7 +77,7 @@ class BingoApp:
                 "Number of cards", min_value=1, max_value=100, value=10
             )
             seed = st.number_input("Random seed (optional)", value=0)
-            free_square = st.checkbox("Include centre FREE square (5×5 only)")
+            free_square = st.checkbox("Include centre FREE square")
 
             photo_on = st.checkbox("Display photo", value=True)
             common_on = st.checkbox("Display common name", value=True)

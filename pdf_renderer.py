@@ -20,7 +20,7 @@ from reportlab.platypus import (
 )
 from reportlab.lib.units import inch
 
-from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT
+from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT, GRID_SCALING
 from models import BingoCard, Species
 
 
@@ -43,11 +43,9 @@ class PDFRenderer:
         """Render multiple bingo cards to a PDF document."""
         buffer = io.BytesIO()
 
-        # Page orientation: landscape for 5×5 with photos, else portrait
+        # Use portrait orientation for all sizes - dynamic scaling handles fit
         grid_size = cards[0].size if cards else 5
-        pagesize = (
-            landscape(letter) if grid_size == 5 and photo_on else portrait(letter)
-        )
+        pagesize = portrait(letter)
 
         doc = SimpleDocTemplate(
             buffer,
@@ -81,6 +79,11 @@ class PDFRenderer:
         sci_on: bool,
     ) -> Table:
         """Create a table representation of a bingo card."""
+        # Get dynamic scaling for this grid size
+        scaling = GRID_SCALING.get(card.size, GRID_SCALING[5])
+        cell_size = scaling["cell_size"]
+        padding = scaling["padding"]
+        
         tbl_data: List[List] = []
 
         for row in card.grid:
@@ -92,23 +95,27 @@ class PDFRenderer:
                     continue
 
                 if isinstance(cell, Species):
-                    flow = self._create_cell_content(cell, photo_on, common_on, sci_on)
+                    flow = self._create_cell_content(cell, photo_on, common_on, sci_on, card.size)
                     tbl_row.append(flow)
                 else:
                     tbl_row.append([])
 
             tbl_data.append(tbl_row)
 
-        table = Table(tbl_data, repeatRows=0, hAlign="CENTER")
+        # Set uniform cell sizes
+        col_widths = [cell_size] * card.size
+        row_heights = [cell_size] * card.size
+
+        table = Table(tbl_data, colWidths=col_widths, rowHeights=row_heights, repeatRows=0, hAlign="CENTER")
         table.setStyle(
             TableStyle(
                 [
                     ("GRID", (0, 0), (-1, -1), 0.75, colors.grey),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("LEFTPADDING", (0, 0), (-1, -1), CELL_PADDING),
-                    ("RIGHTPADDING", (0, 0), (-1, -1), CELL_PADDING),
-                    ("TOPPADDING", (0, 0), (-1, -1), CELL_PADDING),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), CELL_PADDING),
+                    ("LEFTPADDING", (0, 0), (-1, -1), padding),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), padding),
+                    ("TOPPADDING", (0, 0), (-1, -1), padding),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), padding),
                 ]
             )
         )
@@ -121,8 +128,13 @@ class PDFRenderer:
         photo_on: bool,
         common_on: bool,
         sci_on: bool,
+        grid_size: int,
     ) -> List:
         """Create the content for a single bingo card cell."""
+        # Get dynamic scaling for this grid size
+        scaling = GRID_SCALING.get(grid_size, GRID_SCALING[5])
+        photo_size = scaling["photo_size"]
+        
         flow = []
 
         # Add photo if enabled and available
@@ -132,7 +144,7 @@ class PDFRenderer:
                     species.image_url, timeout=self.timeout
                 ).content
                 img = Image(io.BytesIO(img_bytes))
-                img._restrictSize(PHOTO_SIZE, PHOTO_SIZE)
+                img._restrictSize(photo_size, photo_size)
                 flow.append(img)
             except Exception:
                 pass  # Skip image if download fails
