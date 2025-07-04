@@ -115,6 +115,7 @@ class PDFRenderer:
                 [
                     ("GRID", (0, 0), (-1, -1), 0.75, colors.grey),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                     ("LEFTPADDING", (0, 0), (-1, -1), padding),
                     ("RIGHTPADDING", (0, 0), (-1, -1), padding),
                     ("TOPPADDING", (0, 0), (-1, -1), padding),
