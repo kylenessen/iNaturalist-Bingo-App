@@ -22,7 +22,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
 
-from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT, GRID_SCALING
+from config import CELL_PADDING, PHOTO_SIZE, API_TIMEOUT, GRID_SCALING, USABLE_HEIGHT
 from models import BingoCard, Species
 from image_processor import process_image_for_bingo
 
@@ -111,9 +111,9 @@ class PDFRenderer:
 
             tbl_data.append(tbl_row)
 
-        # Set uniform cell sizes
+        # Set cell sizes - uniform width, dynamic height
         col_widths = [cell_size] * card.size
-        row_heights = [cell_size] * card.size
+        row_heights = self._calculate_dynamic_row_heights(card, photo_on, common_on, sci_on, card.size)
 
         table = Table(tbl_data, colWidths=col_widths, rowHeights=row_heights, repeatRows=0, hAlign="CENTER")
         table.setStyle(
@@ -131,6 +131,91 @@ class PDFRenderer:
         )
 
         return table
+
+    def _calculate_text_height(self, species: Species, common_on: bool, sci_on: bool, text_size: int, cell_width: float) -> float:
+        """Calculate required height for species text content."""
+        if not (common_on or sci_on):
+            return 0
+        
+        # Build text content same as in _create_cell_content
+        name_parts = []
+        if common_on and species.common_name:
+            name_parts.append(species.common_name)
+        if sci_on and species.scientific_name:
+            sci_html = (
+                f"<i>{species.scientific_name}</i>"
+                if common_on
+                else species.scientific_name
+            )
+            name_parts.append(sci_html)
+        
+        if not name_parts:
+            return 0
+        
+        # Create the same style as used in _create_cell_content
+        compact_style = ParagraphStyle(
+            'CompactText',
+            parent=self.styles["BodyText"],
+            fontSize=text_size,
+            leading=text_size + 1,
+            alignment=TA_CENTER,
+            spaceAfter=0,
+            spaceBefore=0,
+        )
+        
+        # Create paragraph and measure it
+        text_content = "<br/>".join(name_parts)
+        p = Paragraph(text_content, compact_style)
+        
+        # Calculate required height for the given width
+        # Use wrap method to get required dimensions
+        w, h = p.wrap(cell_width, 200)  # 200 is max height for calculation
+        return h
+
+    def _calculate_dynamic_row_heights(self, card: BingoCard, photo_on: bool, common_on: bool, sci_on: bool, grid_size: int) -> List[float]:
+        """Calculate dynamic row heights based on content."""
+        scaling = GRID_SCALING.get(grid_size, GRID_SCALING[5])
+        cell_size = scaling["cell_size"]
+        photo_size = scaling["photo_size"]
+        text_size = scaling["text_size"]
+        padding = scaling["padding"]
+        
+        # Calculate available width for text (cell width minus padding)
+        text_width = cell_size - (2 * padding)
+        
+        row_heights = []
+        
+        for row in card.grid:
+            max_height_in_row = cell_size  # Start with minimum cell size
+            
+            for cell in row:
+                if cell == "FREE":
+                    # FREE cells just need space for the heading
+                    continue
+                elif isinstance(cell, Species):
+                    # Calculate required height for this species
+                    text_height = self._calculate_text_height(cell, common_on, sci_on, text_size, text_width)
+                    
+                    # Total height = photo height + text height + padding
+                    total_height = photo_size + text_height + (2 * padding)
+                    if photo_on and text_height > 0:
+                        total_height += 4  # Small gap between photo and text
+                    
+                    max_height_in_row = max(max_height_in_row, total_height)
+            
+            row_heights.append(max_height_in_row)
+        
+        # Check if total height exceeds page limit
+        total_height = sum(row_heights)
+        title_space = 0.7 * inch  # Approximate space for title and spacing
+        available_height = USABLE_HEIGHT - title_space
+        
+        if total_height > available_height:
+            # Scale down proportionally to fit on page
+            scale_factor = available_height / total_height
+            row_heights = [h * scale_factor for h in row_heights]
+        
+        return row_heights
 
     def _create_cell_content(
         self,
