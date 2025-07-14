@@ -8,7 +8,6 @@ import requests
 import streamlit as st
 
 from config import (
-    ALLOWED_LICENSES,
     SPECIES_RANK_LEVELS,
     API_TIMEOUT,
     CACHE_TTL,
@@ -49,8 +48,8 @@ class INaturalistClient:
     ) -> List[Species]:
         """Return a list of top‑N species for the given place.
 
-        Filters to research‑grade observations at species level or below,
-        and to allowed photo licenses. Optionally filters by months.
+        Filters to research‑grade observations at species level or below.
+        Optionally filters by months.
 
         Args:
             place_id: iNaturalist place ID
@@ -99,10 +98,6 @@ class INaturalistClient:
                 continue
 
             default_photo = taxon_data.get("default_photo") or {}
-            license_code = default_photo.get("license_code")
-            if license_code and license_code.lower() not in ALLOWED_LICENSES:
-                continue
-
             image_url = default_photo.get("medium_url", "")
             common_name = taxon_data.get("preferred_common_name") or ""
             scientific_name = taxon_data.get("name") or ""
