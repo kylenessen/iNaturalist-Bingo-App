@@ -399,6 +399,7 @@ name = "inaturalist-bingo-app"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "pillow" },
     { name = "pyinaturalist" },
     { name = "reportlab" },
     { name = "requests" },
@@ -415,6 +416,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "pillow" },
     { name = "pyinaturalist" },
     { name = "reportlab" },
     { name = "requests" },
