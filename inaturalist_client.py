@@ -45,17 +45,20 @@ class INaturalistClient:
         place_id: int,
         top_n: int,
         selected_months: List[int] | None = None,
+        selected_iconic_taxa: List[str] | None = None,
     ) -> List[Species]:
         """Return a list of top‑N species for the given place.
 
         Filters to research‑grade observations at species level or below.
-        Optionally filters by months.
+        Optionally filters by months and iconic taxa.
 
         Args:
             place_id: iNaturalist place ID
             top_n: Number of top species to return
             selected_months: List of month numbers (1-12) to filter by,
                 or None for all months
+            selected_iconic_taxa: List of iconic taxa names to filter by,
+                or None for all taxa
         """
         try:
             # Use species_counts endpoint for proper geographic aggregation
@@ -72,6 +75,10 @@ class INaturalistClient:
             # Add month filtering if specified
             if selected_months:
                 params["month"] = ",".join(map(str, selected_months))
+            
+            # Add iconic taxa filtering if specified
+            if selected_iconic_taxa:
+                params["iconic_taxa"] = selected_iconic_taxa
 
             resp = requests.get(
                 "https://api.inaturalist.org/v1/observations/species_counts",
