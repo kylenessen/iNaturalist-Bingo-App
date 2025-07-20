@@ -62,7 +62,10 @@ class BingoApp:
             )
 
         with st.form("controls"):
-            place_query = st.text_input("iNaturalist place (name or ID)")
+            place_query = st.text_input(
+                "iNaturalist place (name or ID)",
+                help="Enter a place name or ID. To find place IDs, visit https://www.inaturalist.org/places and copy the ID from the URL (e.g., 'california-us' from https://www.inaturalist.org/places/california-us)"
+            )
             grid_size = st.selectbox(
                 "Card size", options=[3, 5, 7, 9], format_func=lambda x: f"{x} × {x}"
             )
