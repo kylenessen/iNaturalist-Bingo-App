@@ -34,8 +34,34 @@ class BingoApp:
 
     def _render_form(self) -> dict | None:
         """Render the input form and return form data if submitted."""
-        # Time filtering options (outside form for dynamic updates)
-        st.subheader("Time Filtering")
+        # Filtering options (outside form for dynamic updates)
+        st.subheader("Filtering Options")
+        
+        # Category filtering
+        iconic_taxa_options = {
+            "Aves": "Birds",
+            "Mammalia": "Mammals", 
+            "Plantae": "Plants",
+            "Insecta": "Insects",
+            "Reptilia": "Reptiles",
+            "Amphibia": "Amphibians",
+            "Actinopterygii": "Ray-finned Fish",
+            "Mollusca": "Mollusks",
+            "Arachnida": "Spiders & Arachnids",
+            "Fungi": "Fungi"
+        }
+        
+        iconic_taxa_enabled = st.checkbox("Filter by category", value=False)
+        selected_iconic_taxa = []
+        if iconic_taxa_enabled:
+            selected_iconic_taxa = st.multiselect(
+                "Select categories to include",
+                options=list(iconic_taxa_options.keys()),
+                format_func=lambda x: iconic_taxa_options[x],
+                help="Species will be filtered to only include these categories",
+            )
+        
+        # Time filtering
         time_filter_enabled = st.checkbox("Filter by months", value=False)
         selected_months = []
         if time_filter_enabled:
@@ -105,6 +131,9 @@ class BingoApp:
                 "selected_months": (
                     selected_months if time_filter_enabled else None
                 ),
+                "selected_iconic_taxa": (
+                    selected_iconic_taxa if iconic_taxa_enabled else None
+                ),
             }
 
         return None
@@ -124,7 +153,7 @@ class BingoApp:
 
         # Fetch species data
         species_pool = self._fetch_species_data(
-            place_id, form_data["top_n"], form_data["selected_months"]
+            place_id, form_data["top_n"], form_data["selected_months"], form_data["selected_iconic_taxa"]
         )
         if not species_pool:
             return
@@ -164,12 +193,13 @@ class BingoApp:
         place_id: int,
         top_n: int,
         selected_months: List[int] | None,
+        selected_iconic_taxa: List[str] | None,
     ) -> List[Any] | None:
         """Fetch species data from iNaturalist."""
         with st.spinner("Fetching species list from iNaturalist…"):
             try:
                 return self.client.fetch_top_species(
-                    place_id, top_n, selected_months
+                    place_id, top_n, selected_months, selected_iconic_taxa
                 )
             except Exception as e:
                 st.error(f"Error fetching species data: {e}")
