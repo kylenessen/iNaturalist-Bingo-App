@@ -1,0 +1,343 @@
+/* ============================================================
+   iNaturalist Bingo Card Generator – Styles
+   ============================================================ */
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2c6b2f;
+}
+
+h2 {
+  margin-bottom: 1rem;
+  color: #2c6b2f;
+}
+
+/* --- Form --- */
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  background: #fff;
+}
+
+legend {
+  font-weight: 600;
+  padding: 0 0.5rem;
+  color: #555;
+}
+
+.field {
+  margin-bottom: 0.75rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field input[type="range"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.field input[type="range"] {
+  padding: 0;
+}
+
+.field small {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+/* Checkboxes inside labels */
+.field label input[type="checkbox"] {
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+/* Multi-select checkbox groups */
+.multi-select-wrapper {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0.25rem;
+}
+
+.checkbox-group label {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* --- Place Type-Ahead --- */
+.place-search-field {
+  position: relative;
+}
+
+.dropdown {
+  list-style: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dropdown li:hover,
+.dropdown li.active {
+  background: #e8f5e9;
+}
+
+.dropdown li .place-type {
+  color: #888;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+/* --- Buttons --- */
+#generate-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2c6b2f;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#generate-btn:hover { background: #245524; }
+#generate-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.download-btn {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 1rem auto;
+  padding: 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #1565c0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-btn:hover { background: #0d47a1; }
+.download-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* --- Status / Error --- */
+.status, .error {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.status {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.error {
+  background: #fce4ec;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* --- Preview Navigation --- */
+.preview-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.preview-nav button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.preview-nav button:hover:not(:disabled) { background: #e8f5e9; }
+.preview-nav button:disabled { color: #aaa; cursor: default; }
+
+#card-counter {
+  font-weight: 600;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* --- Bingo Card Grid (Preview) --- */
+.bingo-card {
+  display: grid;
+  border: 2px solid #333;
+  margin: 0 auto 1rem;
+  background: #fff;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bingo-cell {
+  border: 1px solid #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.bingo-cell img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+.bingo-cell .common-name {
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.bingo-cell .sci-name {
+  font-size: 0.65em;
+  font-style: italic;
+  line-height: 1.2;
+  color: #555;
+  word-break: break-word;
+}
+
+.bingo-cell.free-cell {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #2c6b2f;
+}
+
+/* Dynamic grid sizing for preview */
+.bingo-card.grid-3 { grid-template-columns: repeat(3, 1fr); max-width: 480px; }
+.bingo-card.grid-5 { grid-template-columns: repeat(5, 1fr); max-width: 600px; }
+.bingo-card.grid-7 { grid-template-columns: repeat(7, 1fr); max-width: 700px; }
+.bingo-card.grid-9 { grid-template-columns: repeat(9, 1fr); max-width: 720px; }
+
+/* Loading skeleton */
+.bingo-cell img.loading {
+  background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- PDF Render Area (off-screen) --- */
+.pdf-render-area {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+
+/* --- PDF card (for html2canvas capture) --- */
+.pdf-card {
+  background: #fff;
+  display: grid;
+  border: 2px solid #333;
+}
+
+.pdf-card .bingo-cell img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.pdf-card-page {
+  background: #fff;
+  position: relative;
+}
+
+.pdf-card-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  padding-top: 16px;
+  padding-bottom: 8px;
+  color: #333;
+}
+
+/* --- Utility --- */
+.hidden { display: none !important; }
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .container { margin: 1rem auto; }
+  h1 { font-size: 1.4rem; }
+  fieldset { padding: 0.75rem; }
+  .bingo-cell .common-name { font-size: 0.6em; }
+  .bingo-cell .sci-name { font-size: 0.55em; }
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iNaturalist Bingo Card Generator</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>iNaturalist Bingo Card Generator</h1>
+
+    <form id="bingo-form" autocomplete="off">
+      <!-- Filtering Options -->
+      <fieldset>
+        <legend>Filtering Options</legend>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="taxa-filter-enabled"> Filter by category
+          </label>
+          <div id="taxa-select-wrapper" class="multi-select-wrapper hidden">
+            <label for="taxa-select">Select categories to include</label>
+            <div id="taxa-checkboxes" class="checkbox-group"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="month-filter-enabled"> Filter by months
+          </label>
+          <div id="month-select-wrapper" class="multi-select-wrapper hidden">
+            <label for="month-select">Select months to include</label>
+            <div id="month-checkboxes" class="checkbox-group"></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Main Controls -->
+      <fieldset>
+        <legend>Card Settings</legend>
+
+        <div class="field place-search-field">
+          <label for="place-input">iNaturalist place</label>
+          <input type="text" id="place-input" placeholder="Start typing a place name…">
+          <ul id="place-dropdown" class="dropdown hidden"></ul>
+          <input type="hidden" id="place-id" value="">
+          <small id="place-display"></small>
+        </div>
+
+        <div class="field">
+          <label for="grid-size">Card size</label>
+          <select id="grid-size">
+            <option value="3">3 × 3</option>
+            <option value="5" selected>5 × 5</option>
+            <option value="7">7 × 7</option>
+            <option value="9">9 × 9</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="top-n">Species pool size (Top-N): <span id="top-n-value">25</span></label>
+          <input type="range" id="top-n" min="10" max="100" value="25" step="5">
+        </div>
+
+        <div class="field">
+          <label for="num-cards">Number of cards</label>
+          <input type="number" id="num-cards" min="1" max="100" value="10">
+        </div>
+
+        <div class="field">
+          <label for="seed">Random seed (optional)</label>
+          <input type="number" id="seed" value="0">
+        </div>
+
+        <div class="field">
+          <label><input type="checkbox" id="free-square"> Include centre FREE square</label>
+        </div>
+      </fieldset>
+
+      <!-- Display Options -->
+      <fieldset>
+        <legend>Display Options</legend>
+
+        <div class="field">
+          <label><input type="checkbox" id="photo-on" checked> Display photo</label>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="common-on" checked> Display common name</label>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="sci-on" checked> Display scientific name</label>
+        </div>
+        <div class="field">
+          <label for="doc-title">Document title</label>
+          <input type="text" id="doc-title" value="Bingo: Field Trip Edition">
+        </div>
+      </fieldset>
+
+      <button type="submit" id="generate-btn">Generate</button>
+    </form>
+
+    <!-- Status Messages -->
+    <div id="status" class="status hidden"></div>
+    <div id="error" class="error hidden"></div>
+
+    <!-- Card Preview -->
+    <div id="preview-section" class="hidden">
+      <h2>Preview</h2>
+      <div id="preview-nav" class="preview-nav">
+        <button type="button" id="prev-card" disabled>&larr; Previous</button>
+        <span id="card-counter">Card 1 of 1</span>
+        <button type="button" id="next-card" disabled>Next &rarr;</button>
+      </div>
+      <div id="card-container"></div>
+      <button type="button" id="download-pdf" class="download-btn">Download PDF</button>
+    </div>
+
+    <!-- Hidden container for PDF rendering -->
+    <div id="pdf-render-area" class="pdf-render-area"></div>
+  </div>
+
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="lib/html2canvas.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
