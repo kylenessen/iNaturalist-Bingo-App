@@ -12,6 +12,7 @@ const SCALE = 2; // 2x for ~192 effective DPI
 const PAGE_W_IN = 8.5;
 const PAGE_H_IN = 11;
 const MARGIN_IN = 0.5;
+const CELL_BORDER_PX = 2;
 
 function getProxiedImageUrl(imageUrl) {
   if (!imageUrl) return "";
@@ -25,13 +26,15 @@ function getProxiedImageUrl(imageUrl) {
   return proxiedUrl.toString();
 }
 
-function getCellLayout(cellSize, options) {
+function getCellLayout(cellWidth, cellHeight, options) {
   const { photoOn, commonOn, sciOn } = options;
   const hasText = commonOn || sciOn;
-  const padding = Math.max(3, Math.floor(cellSize * 0.035));
-  const gap = photoOn && hasText ? Math.max(2, Math.floor(cellSize * 0.02)) : 0;
-  const commonFontSize = Math.max(7, Math.min(13, Math.floor(cellSize / 12)));
-  const sciFontSize = Math.max(6, Math.min(11, Math.floor(cellSize / 15)));
+  const padding = Math.max(3, Math.floor(cellWidth * 0.035));
+  const contentWidth = Math.max(0, cellWidth - padding * 2 - CELL_BORDER_PX);
+  const contentHeight = Math.max(0, cellHeight - padding * 2 - CELL_BORDER_PX);
+  const gap = photoOn && hasText ? Math.max(2, Math.floor(cellWidth * 0.02)) : 0;
+  const commonFontSize = Math.max(7, Math.min(13, Math.floor(cellWidth / 13)));
+  const sciFontSize = Math.max(6, Math.min(11, Math.floor(cellWidth / 16)));
 
   if (!photoOn || !hasText) {
     return {
@@ -39,21 +42,21 @@ function getCellLayout(cellSize, options) {
       gap,
       commonFontSize,
       sciFontSize,
-      imageSize: photoOn ? cellSize - padding * 2 : 0,
-      labelHeight: hasText ? cellSize - padding * 2 : 0,
+      imageSize: photoOn ? Math.min(contentWidth, contentHeight) : 0,
+      labelHeight: hasText ? contentHeight : 0,
     };
   }
 
-  const labelHeight = Math.max(28, Math.floor(cellSize * 0.36));
-  const availableImageSize = cellSize - padding * 2 - labelHeight - gap;
+  const imageSize = Math.min(contentWidth, Math.max(0, contentHeight - gap));
+  const labelHeight = Math.max(0, contentHeight - imageSize - gap);
 
   return {
     padding,
     gap,
     commonFontSize,
     sciFontSize,
-    imageSize: Math.max(0, Math.floor(availableImageSize)),
-    labelHeight,
+    imageSize: Math.floor(imageSize),
+    labelHeight: Math.floor(labelHeight),
   };
 }
 
@@ -116,12 +119,11 @@ function renderPdfCard(grid, gridSize, options, title) {
   const pageH = PAGE_H_IN * DPI;
   const margin = MARGIN_IN * DPI;
   const usableW = pageW - 2 * margin;
-  const titleHeight = 48;
+  const titleHeight = 60;
   const usableH = pageH - 2 * margin - titleHeight;
-  const layout = getCellLayout(
-    Math.floor(Math.min(usableW / gridSize, usableH / gridSize)),
-    options
-  );
+  const cellWidth = Math.floor(usableW / gridSize);
+  const cellHeight = Math.floor(usableH / gridSize);
+  const layout = getCellLayout(cellWidth, cellHeight, options);
 
   // Page wrapper
   const page = document.createElement("div");
@@ -138,15 +140,16 @@ function renderPdfCard(grid, gridSize, options, title) {
   page.appendChild(titleEl);
 
   // Card grid
-  const cellSize = Math.floor(Math.min(usableW / gridSize, usableH / gridSize));
-  const gridW = cellSize * gridSize;
+  const gridW = cellWidth * gridSize;
+  const gridH = cellHeight * gridSize;
 
   const card = document.createElement("div");
   card.className = "pdf-card";
   card.style.display = "grid";
-  card.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
-  card.style.gridTemplateRows = `repeat(${gridSize}, ${cellSize}px)`;
+  card.style.gridTemplateColumns = `repeat(${gridSize}, ${cellWidth}px)`;
+  card.style.gridTemplateRows = `repeat(${gridSize}, ${cellHeight}px)`;
   card.style.width = gridW + "px";
+  card.style.height = gridH + "px";
   card.style.margin = "0 auto";
   card.style.border = "2px solid #333";
 
@@ -186,6 +189,7 @@ function renderPdfCard(grid, gridSize, options, title) {
           img.style.borderRadius = "2px";
           img.style.display = "block";
           img.style.flex = "0 0 auto";
+          cell.style.justifyContent = "flex-start";
           cell.appendChild(img);
         }
 

@@ -16,24 +16,22 @@ ALLOWED_LICENSES = {
 # Species rank levels: species (10) through variety (15)
 SPECIES_RANK_LEVELS = set(range(10, 16))
 
-# PDF rendering constants
-CELL_PADDING = 4  # pts
-PHOTO_SIZE = 1.4 * inch  # will be scaled proportionally
-
-# Page layout constants for dynamic scaling
+# Page layout constants for PDF rendering
 PAGE_WIDTH = 8.5 * inch
 PAGE_HEIGHT = 11 * inch
 MARGIN_SIZE = 0.5 * inch  # Uniform margins on all sides
-USABLE_WIDTH = PAGE_WIDTH - (2 * MARGIN_SIZE)  # 7.5 inches
-USABLE_HEIGHT = PAGE_HEIGHT - (2 * MARGIN_SIZE) - (0.5 * inch)  # 9.5 inches (minus title space)
+TITLE_BLOCK_HEIGHT = 0.78 * inch
+USABLE_WIDTH = PAGE_WIDTH - (2 * MARGIN_SIZE)
+USABLE_HEIGHT = PAGE_HEIGHT - (2 * MARGIN_SIZE)
+GRID_AREA_HEIGHT = USABLE_HEIGHT - TITLE_BLOCK_HEIGHT
 
-# Dynamic scaling factors by grid size
-# With reduced margins, we have more space (7.5" vs 6.5")
-GRID_SCALING = {
-    3: {"cell_size": 2.3 * inch, "photo_size": 1.8 * inch, "padding": 4, "text_size": 10},
-    5: {"cell_size": 1.4 * inch, "photo_size": 1.1 * inch, "padding": 3, "text_size": 8},
-    7: {"cell_size": 1.0 * inch, "photo_size": 0.8 * inch, "padding": 2, "text_size": 7},
-    9: {"cell_size": 0.8 * inch, "photo_size": 0.6 * inch, "padding": 1, "text_size": 6},
+# Text and padding scale by grid density. Cell width and height are derived
+# from the shared printable area so every square card fills the page similarly.
+GRID_CELL_STYLES = {
+    3: {"padding": 4, "text_size": 10},
+    5: {"padding": 3, "text_size": 8},
+    7: {"padding": 2, "text_size": 7},
+    9: {"padding": 1, "text_size": 6},
 }
 
 # API settings
