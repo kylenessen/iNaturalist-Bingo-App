@@ -44,3 +44,8 @@ export const MONTH_NAMES = [
 // API settings
 export const API_BASE = "https://api.inaturalist.org/v1";
 export const DEBOUNCE_MS = 300;
+
+// PDF generation captures cards with html2canvas. iNaturalist photo hosts do
+// not expose CORS headers, so PDF images need a CORS-safe image proxy.
+export const PDF_IMAGE_PROXY_BASE = "https://images.weserv.nl/";
+export const PDF_IMAGE_SIZE_PX = 384;

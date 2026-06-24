@@ -3,6 +3,8 @@
  * Renders each bingo card at letter-size proportions, captures at 2x, assembles PDF.
  */
 
+import { PDF_IMAGE_PROXY_BASE, PDF_IMAGE_SIZE_PX } from "./config.js";
+
 /* global jspdf, html2canvas */
 
 const DPI = 96;
@@ -10,6 +12,76 @@ const SCALE = 2; // 2x for ~192 effective DPI
 const PAGE_W_IN = 8.5;
 const PAGE_H_IN = 11;
 const MARGIN_IN = 0.5;
+
+function getProxiedImageUrl(imageUrl) {
+  if (!imageUrl) return "";
+
+  const proxiedUrl = new URL(PDF_IMAGE_PROXY_BASE);
+  proxiedUrl.searchParams.set("url", imageUrl);
+  proxiedUrl.searchParams.set("w", String(PDF_IMAGE_SIZE_PX));
+  proxiedUrl.searchParams.set("h", String(PDF_IMAGE_SIZE_PX));
+  proxiedUrl.searchParams.set("fit", "cover");
+  proxiedUrl.searchParams.set("output", "jpg");
+  return proxiedUrl.toString();
+}
+
+function getCellLayout(cellSize, options) {
+  const { photoOn, commonOn, sciOn } = options;
+  const hasText = commonOn || sciOn;
+  const padding = Math.max(3, Math.floor(cellSize * 0.035));
+  const gap = photoOn && hasText ? Math.max(2, Math.floor(cellSize * 0.02)) : 0;
+  const commonFontSize = Math.max(7, Math.min(13, Math.floor(cellSize / 12)));
+  const sciFontSize = Math.max(6, Math.min(11, Math.floor(cellSize / 15)));
+
+  if (!photoOn || !hasText) {
+    return {
+      padding,
+      gap,
+      commonFontSize,
+      sciFontSize,
+      imageSize: photoOn ? cellSize - padding * 2 : 0,
+      labelHeight: hasText ? cellSize - padding * 2 : 0,
+    };
+  }
+
+  const labelHeight = Math.max(28, Math.floor(cellSize * 0.36));
+  const availableImageSize = cellSize - padding * 2 - labelHeight - gap;
+
+  return {
+    padding,
+    gap,
+    commonFontSize,
+    sciFontSize,
+    imageSize: Math.max(0, Math.floor(availableImageSize)),
+    labelHeight,
+  };
+}
+
+function applyLineClamp(element, lineCount) {
+  element.style.display = "-webkit-box";
+  element.style.setProperty("-webkit-box-orient", "vertical");
+  element.style.setProperty("-webkit-line-clamp", String(lineCount));
+  element.style.overflow = "hidden";
+}
+
+function fitTextBlocks(container) {
+  const blocks = container.querySelectorAll(".species-labels");
+
+  blocks.forEach((block) => {
+    const textEls = block.querySelectorAll(".species-label");
+    let guard = 0;
+
+    while (block.scrollHeight > block.clientHeight && guard < 8) {
+      textEls.forEach((el) => {
+        const current = Number.parseFloat(el.style.fontSize);
+        if (current > 6) {
+          el.style.fontSize = `${current - 1}px`;
+        }
+      });
+      guard += 1;
+    }
+  });
+}
 
 /**
  * Wait for all images in a container to finish loading.
@@ -19,9 +91,16 @@ function waitForImages(container) {
   const promises = Array.from(imgs).map(
     (img) =>
       new Promise((resolve) => {
-        if (img.complete) return resolve();
-        img.onload = resolve;
-        img.onerror = resolve;
+        if (img.complete) {
+          resolve(img.naturalWidth > 0);
+          return;
+        }
+
+        img.onload = () => resolve(true);
+        img.onerror = () => {
+          img.remove();
+          resolve(false);
+        };
       })
   );
   return Promise.all(promises);
@@ -39,6 +118,10 @@ function renderPdfCard(grid, gridSize, options, title) {
   const usableW = pageW - 2 * margin;
   const titleHeight = 48;
   const usableH = pageH - 2 * margin - titleHeight;
+  const layout = getCellLayout(
+    Math.floor(Math.min(usableW / gridSize, usableH / gridSize)),
+    options
+  );
 
   // Page wrapper
   const page = document.createElement("div");
@@ -78,8 +161,11 @@ function renderPdfCard(grid, gridSize, options, title) {
       cell.style.alignItems = "center";
       cell.style.justifyContent = "center";
       cell.style.textAlign = "center";
-      cell.style.padding = "2px";
+      cell.style.gap = `${layout.gap}px`;
+      cell.style.padding = `${layout.padding}px`;
       cell.style.overflow = "hidden";
+      cell.style.minWidth = "0";
+      cell.style.minHeight = "0";
 
       if (cellData === "FREE") {
         cell.style.fontSize = "1.2em";
@@ -87,36 +173,63 @@ function renderPdfCard(grid, gridSize, options, title) {
         cell.style.color = "#2c6b2f";
         cell.textContent = "FREE";
       } else {
-        if (photoOn && cellData.imageUrl) {
+        const proxiedImageUrl = getProxiedImageUrl(cellData.imageUrl);
+
+        if (photoOn && proxiedImageUrl && layout.imageSize > 0) {
           const img = document.createElement("img");
           img.crossOrigin = "anonymous";
-          img.src = cellData.imageUrl;
-          img.style.width = "80%";
-          img.style.aspectRatio = "1";
+          img.src = proxiedImageUrl;
+          img.style.width = `${layout.imageSize}px`;
+          img.style.height = `${layout.imageSize}px`;
+          img.style.maxWidth = "100%";
           img.style.objectFit = "cover";
           img.style.borderRadius = "2px";
           img.style.display = "block";
+          img.style.flex = "0 0 auto";
           cell.appendChild(img);
         }
-        if (commonOn && cellData.commonName) {
-          const span = document.createElement("div");
-          span.style.fontSize = Math.max(8, Math.floor(cellSize / 12)) + "px";
-          span.style.fontWeight = "600";
-          span.style.lineHeight = "1.2";
-          span.style.marginTop = "1px";
-          span.style.wordBreak = "break-word";
-          span.textContent = cellData.commonName;
-          cell.appendChild(span);
-        }
-        if (sciOn && cellData.scientificName) {
-          const span = document.createElement("div");
-          span.style.fontSize = Math.max(7, Math.floor(cellSize / 14)) + "px";
-          span.style.fontStyle = "italic";
-          span.style.lineHeight = "1.2";
-          span.style.color = "#555";
-          span.style.wordBreak = "break-word";
-          span.textContent = cellData.scientificName;
-          cell.appendChild(span);
+
+        if ((commonOn && cellData.commonName) || (sciOn && cellData.scientificName)) {
+          const labels = document.createElement("div");
+          labels.className = "species-labels";
+          labels.style.display = "flex";
+          labels.style.flex = `0 0 ${layout.labelHeight}px`;
+          labels.style.flexDirection = "column";
+          labels.style.justifyContent = "center";
+          labels.style.alignItems = "center";
+          labels.style.width = "100%";
+          labels.style.minHeight = "0";
+          labels.style.overflow = "hidden";
+
+          if (commonOn && cellData.commonName) {
+            const span = document.createElement("div");
+            span.className = "species-label";
+            span.style.fontSize = `${layout.commonFontSize}px`;
+            span.style.fontWeight = "600";
+            span.style.lineHeight = "1.12";
+            span.style.overflowWrap = "break-word";
+            span.style.maxWidth = "100%";
+            span.textContent = cellData.commonName;
+            applyLineClamp(span, 2);
+            labels.appendChild(span);
+          }
+
+          if (sciOn && cellData.scientificName) {
+            const span = document.createElement("div");
+            span.className = "species-label";
+            span.style.fontSize = `${layout.sciFontSize}px`;
+            span.style.fontStyle = "italic";
+            span.style.lineHeight = "1.12";
+            span.style.color = "#555";
+            span.style.overflowWrap = "break-word";
+            span.style.maxWidth = "100%";
+            span.style.paddingBottom = "1px";
+            span.textContent = cellData.scientificName;
+            applyLineClamp(span, 2);
+            labels.appendChild(span);
+          }
+
+          cell.appendChild(labels);
         }
       }
 
@@ -150,6 +263,7 @@ export async function generatePdf(cards, gridSize, options, title, onProgress) {
     renderArea.appendChild(pageEl);
 
     await waitForImages(pageEl);
+    fitTextBlocks(pageEl);
     // Small delay to allow browser to paint
     await new Promise((r) => setTimeout(r, 50));
 
