@@ -14,7 +14,8 @@ path. `main.py` and `ui.py` should only point users to the static app.
 
 - Run the app: `uv run python -m http.server 8765 --directory docs`
 - Open locally: `http://127.0.0.1:8765`
-- Check JavaScript syntax: `node --check docs/js/app.js && node --check docs/js/api.js && node --check docs/js/bingo.js && node --check docs/js/config.js && node --check docs/js/pdf.js`
+- Check JavaScript syntax: `node --check docs/js/app.js && node --check docs/js/api.js && node --check docs/js/bingo.js && node --check docs/js/config.js && node --check docs/js/pdf.js && node --check docs/js/species-settings.js`
+- Run JavaScript unit tests: `node --test docs/js/species-settings.test.mjs`
 - Format touched Python: `uv run black main.py ui.py config.py pdf_renderer.py`
 - Lint touched Python: `uv run flake8 main.py ui.py config.py pdf_renderer.py`
 - Run tests: `uv run pytest`
@@ -36,6 +37,7 @@ The static app is browser-only and does not require a backend.
 - `docs/index.html` contains the app shell.
 - `docs/css/styles.css` contains app and PDF capture styles.
 - `docs/js/api.js` fetches places and observations from iNaturalist.
+- `docs/js/species-settings.js` calculates species pool defaults and warnings.
 - `docs/js/bingo.js` builds deterministic bingo grids.
 - `docs/js/app.js` manages UI state and preview rendering.
 - `docs/js/pdf.js` captures PDF pages with `html2canvas` and assembles them

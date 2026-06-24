@@ -51,6 +51,7 @@ https://kylenessen.github.io/iNaturalist-Bingo-App/
 - `docs/css/styles.css` contains app and PDF capture styles.
 - `docs/js/app.js` wires the UI together.
 - `docs/js/api.js` talks to the iNaturalist API.
+- `docs/js/species-settings.js` calculates species pool defaults and warnings.
 - `docs/js/bingo.js` builds deterministic bingo grids.
 - `docs/js/pdf.js` renders PDF pages in the browser.
 - `docs/lib/` contains vendored browser PDF dependencies.
@@ -67,6 +68,8 @@ node --check docs/js/api.js
 node --check docs/js/bingo.js
 node --check docs/js/config.js
 node --check docs/js/pdf.js
+node --check docs/js/species-settings.js
+node --test docs/js/species-settings.test.mjs
 uv run black main.py ui.py config.py pdf_renderer.py
 uv run flake8 main.py ui.py config.py pdf_renderer.py
 ```
