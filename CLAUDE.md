@@ -15,6 +15,7 @@ path. `main.py` and `ui.py` should only point users to the static app.
 - Run the app: `uv run python -m http.server 8765 --directory docs`
 - Open locally: `http://127.0.0.1:8765`
 - Check JavaScript syntax: `node --check docs/js/app.js && node --check docs/js/api.js && node --check docs/js/bingo.js && node --check docs/js/config.js && node --check docs/js/pdf.js`
+- Check PDF layout regression: `node tests/pdf-layout.test.mjs`
 - Format touched Python: `uv run black main.py ui.py config.py pdf_renderer.py`
 - Lint touched Python: `uv run flake8 main.py ui.py config.py pdf_renderer.py`
 - Run tests: `uv run pytest`

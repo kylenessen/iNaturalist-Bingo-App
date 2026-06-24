@@ -67,6 +67,7 @@ node --check docs/js/api.js
 node --check docs/js/bingo.js
 node --check docs/js/config.js
 node --check docs/js/pdf.js
+node tests/pdf-layout.test.mjs
 uv run black main.py ui.py config.py pdf_renderer.py
 uv run flake8 main.py ui.py config.py pdf_renderer.py
 ```

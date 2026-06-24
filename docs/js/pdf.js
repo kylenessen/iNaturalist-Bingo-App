@@ -13,6 +13,9 @@ const PAGE_W_IN = 8.5;
 const PAGE_H_IN = 11;
 const MARGIN_IN = 0.5;
 const CELL_BORDER_PX = 2;
+const LABEL_LINE_HEIGHT = 1.12;
+const LABEL_LINES_PER_NAME = 2;
+const SCI_LABEL_BOTTOM_PAD_PX = 1;
 
 function getProxiedImageUrl(imageUrl) {
   if (!imageUrl) return "";
@@ -26,7 +29,19 @@ function getProxiedImageUrl(imageUrl) {
   return proxiedUrl.toString();
 }
 
-function getCellLayout(cellWidth, cellHeight, options) {
+function getTwoLineLabelHeight(commonFontSize, sciFontSize, commonOn, sciOn) {
+  const commonHeight = commonOn
+    ? Math.ceil(commonFontSize * LABEL_LINE_HEIGHT * LABEL_LINES_PER_NAME)
+    : 0;
+  const sciHeight = sciOn
+    ? Math.ceil(sciFontSize * LABEL_LINE_HEIGHT * LABEL_LINES_PER_NAME) +
+      SCI_LABEL_BOTTOM_PAD_PX
+    : 0;
+
+  return commonHeight + sciHeight;
+}
+
+export function getCellLayout(cellWidth, cellHeight, options) {
   const { photoOn, commonOn, sciOn } = options;
   const hasText = commonOn || sciOn;
   const padding = Math.max(3, Math.floor(cellWidth * 0.035));
@@ -47,7 +62,14 @@ function getCellLayout(cellWidth, cellHeight, options) {
     };
   }
 
-  const imageSize = Math.min(contentWidth, Math.max(0, contentHeight - gap));
+  const minLabelHeight = Math.min(
+    contentHeight,
+    getTwoLineLabelHeight(commonFontSize, sciFontSize, commonOn, sciOn)
+  );
+  const imageSize = Math.min(
+    contentWidth,
+    Math.max(0, contentHeight - gap - minLabelHeight)
+  );
   const labelHeight = Math.max(0, contentHeight - imageSize - gap);
 
   return {
@@ -65,6 +87,7 @@ function applyLineClamp(element, lineCount) {
   element.style.setProperty("-webkit-box-orient", "vertical");
   element.style.setProperty("-webkit-line-clamp", String(lineCount));
   element.style.overflow = "hidden";
+  element.style.flex = "0 0 auto";
 }
 
 function fitTextBlocks(container) {
@@ -209,11 +232,11 @@ function renderPdfCard(grid, gridSize, options, title) {
             span.className = "species-label";
             span.style.fontSize = `${layout.commonFontSize}px`;
             span.style.fontWeight = "600";
-            span.style.lineHeight = "1.12";
+            span.style.lineHeight = String(LABEL_LINE_HEIGHT);
             span.style.overflowWrap = "break-word";
             span.style.maxWidth = "100%";
             span.textContent = cellData.commonName;
-            applyLineClamp(span, 2);
+            applyLineClamp(span, LABEL_LINES_PER_NAME);
             labels.appendChild(span);
           }
 
@@ -222,13 +245,13 @@ function renderPdfCard(grid, gridSize, options, title) {
             span.className = "species-label";
             span.style.fontSize = `${layout.sciFontSize}px`;
             span.style.fontStyle = "italic";
-            span.style.lineHeight = "1.12";
+            span.style.lineHeight = String(LABEL_LINE_HEIGHT);
             span.style.color = "#555";
             span.style.overflowWrap = "break-word";
             span.style.maxWidth = "100%";
-            span.style.paddingBottom = "1px";
+            span.style.paddingBottom = `${SCI_LABEL_BOTTOM_PAD_PX}px`;
             span.textContent = cellData.scientificName;
-            applyLineClamp(span, 2);
+            applyLineClamp(span, LABEL_LINES_PER_NAME);
             labels.appendChild(span);
           }
 
