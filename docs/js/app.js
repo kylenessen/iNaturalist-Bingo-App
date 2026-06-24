@@ -12,6 +12,7 @@ import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
 const state = {
   placeId: null,
   placeName: "",
+  generatedPlaceName: "",
   cards: [],       // Array of grids
   gridSize: 5,
   currentCard: 0,
@@ -67,6 +68,21 @@ function showError(msg) {
 function hideMessages() {
   statusEl.classList.add("hidden");
   errorEl.classList.add("hidden");
+}
+
+let docTitleDefault = docTitleInput.value;
+
+function setDocTitleDefault(title) {
+  if (!title) return;
+
+  const shouldUseDefault =
+    docTitleInput.value === docTitleDefault || docTitleInput.value.trim() === "";
+
+  docTitleDefault = title;
+
+  if (shouldUseDefault) {
+    docTitleInput.value = title;
+  }
 }
 
 function debounce(fn, ms) {
@@ -151,6 +167,10 @@ function selectPlace(place) {
   placeIdInput.value = place.id;
   placeDisplay.textContent = `Place ID: ${place.id}`;
   placeDropdown.classList.add("hidden");
+
+  if (state.cards.length === 0) {
+    setDocTitleDefault(place.displayName);
+  }
 }
 
 placeInput.addEventListener("input", debounce((e) => handlePlaceInput(e.target.value), DEBOUNCE_MS));
@@ -294,6 +314,7 @@ form.addEventListener("submit", async (e) => {
   // Resolve place ID
   let placeId = state.placeId;
   const rawPlace = placeInput.value.trim();
+  const placeTitle = state.placeName || rawPlace;
 
   if (!placeId && rawPlace) {
     // If user typed a numeric ID directly
@@ -367,6 +388,8 @@ form.addEventListener("submit", async (e) => {
     state.options.photoOn = photoOnCheck.checked;
     state.options.commonOn = commonOnCheck.checked;
     state.options.sciOn = sciOnCheck.checked;
+    state.generatedPlaceName = placeTitle;
+    setDocTitleDefault(placeTitle);
 
     renderCurrentCard();
     previewSection.classList.remove("hidden");
@@ -388,7 +411,7 @@ downloadBtn.addEventListener("click", async () => {
   downloadBtn.textContent = "Generating PDF…";
 
   try {
-    const title = docTitleInput.value || "Bingo: Field Trip Edition";
+    const title = docTitleInput.value || state.generatedPlaceName || "iNaturalist Bingo";
     const blob = await generatePdf(
       state.cards,
       state.gridSize,
