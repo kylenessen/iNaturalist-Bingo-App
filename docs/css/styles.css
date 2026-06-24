@@ -88,7 +88,32 @@ legend {
 
 .field-warning {
   margin-top: 0.35rem;
-  color: #8a5a00;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8a900;
+  border-radius: 6px;
+  background: #fff5c2;
+  color: #5d4200;
+  font-weight: 600;
+}
+
+.field-warning::before {
+  content: "!";
+  display: inline-flex;
+  flex: 0 0 1.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.05rem;
+  border-radius: 50%;
+  background: #d8a900;
+  color: #3d2a00;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 /* Checkboxes inside labels */

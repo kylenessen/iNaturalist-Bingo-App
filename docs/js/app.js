@@ -170,8 +170,24 @@ function renderRareSpeciesWarning(species, value) {
   setTopNWarning(
     `This pool reaches species with fewer than ` +
     `${RARE_OBSERVATION_THRESHOLD} observations here. ` +
-    `The last included species has ${cutoff.observationCount} observations.`
+    `The last included species has ` +
+    `${formatObservationCount(cutoff.observationCount)}.`
   );
+}
+
+function formatObservationCount(count) {
+  return count === 1 ? "1 observation" : `${count} observations`;
+}
+
+function getEffectiveAvailableSpecies(speciesPool, requestedCount) {
+  const reportedTotal = Number(speciesPool.totalAvailable || 0);
+  const fetchedTotal = speciesPool.species.length;
+
+  if (requestedCount >= reportedTotal && fetchedTotal < reportedTotal) {
+    return fetchedTotal;
+  }
+
+  return reportedTotal;
 }
 
 function syncSpeciesPoolControls(value = null, options = {}) {
@@ -221,14 +237,28 @@ async function refreshRareSpeciesWarning() {
   const { selectedMonths, selectedIconicTaxa } = getSelectedFilters();
 
   try {
-    const { species } = await fetchSpeciesPool(
+    const speciesPool = await fetchSpeciesPool(
       state.placeId,
       settings.value,
       selectedMonths,
       selectedIconicTaxa
     );
+    const species = speciesPool.species;
 
     if (requestId !== state.rareWarningRequestId) return;
+
+    const effectiveAvailableSpecies = getEffectiveAvailableSpecies(
+      speciesPool,
+      settings.value
+    );
+    if (effectiveAvailableSpecies !== state.speciesAvailability?.totalAvailable) {
+      state.speciesAvailability = { totalAvailable: effectiveAvailableSpecies };
+      const updatedSettings = syncSpeciesPoolControls(settings.value, {
+        checkRare: false,
+      });
+      renderRareSpeciesWarning(species, updatedSettings.value);
+      return;
+    }
 
     renderRareSpeciesWarning(species, settings.value);
   } catch {
@@ -609,7 +639,9 @@ form.addEventListener("submit", async (e) => {
       selectedIconicTaxa
     );
     const species = speciesPool.species;
-    state.speciesAvailability = { totalAvailable: speciesPool.totalAvailable };
+    state.speciesAvailability = {
+      totalAvailable: getEffectiveAvailableSpecies(speciesPool, topN),
+    };
     const availableSpeciesSettings = syncSpeciesPoolControls(topN, {
       checkRare: false,
     });

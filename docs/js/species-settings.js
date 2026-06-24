@@ -80,7 +80,8 @@ export function getRarelyObservedCutoff(
     return null;
   }
 
-  const cutoffSpecies = species[selectedSize - 1];
+  const cutoffIndex = Math.min(selectedSize, species.length) - 1;
+  const cutoffSpecies = species[cutoffIndex];
   if (!cutoffSpecies) return null;
 
   const observationCount = normalizeCount(cutoffSpecies.observationCount);
@@ -90,6 +91,7 @@ export function getRarelyObservedCutoff(
 
   return {
     poolSize: selectedSize,
+    availablePoolSize: cutoffIndex + 1,
     observationCount,
     threshold,
   };

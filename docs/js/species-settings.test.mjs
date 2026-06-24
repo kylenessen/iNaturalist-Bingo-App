@@ -54,7 +54,22 @@ test("detects when the selected cutoff is rarely observed", () => {
   assert.equal(settings.getRarelyObservedCutoff(species, 2), null);
   assert.deepEqual(settings.getRarelyObservedCutoff(species, 3), {
     poolSize: 3,
+    availablePoolSize: 3,
     observationCount: 4,
+    threshold: 5,
+  });
+});
+
+test("checks the last available species when the requested pool is short", () => {
+  const species = [
+    { observationCount: 8 },
+    { observationCount: 1 },
+  ];
+
+  assert.deepEqual(settings.getRarelyObservedCutoff(species, 4), {
+    poolSize: 4,
+    availablePoolSize: 2,
+    observationCount: 1,
     threshold: 5,
   });
 });
