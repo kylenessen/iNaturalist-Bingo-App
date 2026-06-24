@@ -151,7 +151,6 @@ function renderPdfCard(grid, gridSize, options, title) {
   card.style.width = gridW + "px";
   card.style.height = gridH + "px";
   card.style.margin = "0 auto";
-  card.style.border = "2px solid #333";
 
   for (let r = 0; r < gridSize; r++) {
     for (let c = 0; c < gridSize; c++) {

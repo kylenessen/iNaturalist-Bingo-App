@@ -307,7 +307,6 @@ legend {
 .pdf-card {
   background: #fff;
   display: grid;
-  border: 2px solid #333;
 }
 
 .pdf-card .bingo-cell img {
