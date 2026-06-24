@@ -1,44 +1,56 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in this repository.
+
+## Product Direction
+
+The active product is the static client-side app in `docs/`. It is intended to
+run on GitHub Pages from the repository `docs/` folder.
+
+The Streamlit app is deprecated. Do not add new functionality to the Streamlit
+path. `main.py` and `ui.py` should only point users to the static app.
 
 ## Development Commands
 
-- **Run the application**: `streamlit run main.py`
-- **Install dependencies**: `uv sync`
-- **Run tests**: `pytest`
-- **Format code**: `black .`
-- **Lint code**: `flake8`
-- **Type checking**: `mypy main.py`
+- Run the app: `uv run python -m http.server 8765 --directory docs`
+- Open locally: `http://127.0.0.1:8765`
+- Check JavaScript syntax: `node --check docs/js/app.js && node --check docs/js/api.js && node --check docs/js/bingo.js && node --check docs/js/config.js && node --check docs/js/pdf.js`
+- Format touched Python: `uv run black main.py ui.py config.py pdf_renderer.py`
+- Lint touched Python: `uv run flake8 main.py ui.py config.py pdf_renderer.py`
+- Run tests: `uv run pytest`
 
 ## Development Workflow
 
 When implementing new features or bug fixes:
 
-1. **Create a new branch** for the feature/fix (e.g., `feature/add-species-filter` or `fix/pdf-layout-bug`)
-2. **Make commits automatically** during development using your judgment - commit logical units of work as you progress
-3. **Run linting and type checking** before each commit to ensure code quality
-4. **When the task is complete**, prompt the user to test the changes
-5. **After user acceptance**, create a pull request back to the main branch
+1. Create a new branch for the feature or fix.
+2. Make small atomic commits as work progresses.
+3. Prefer the static app in `docs/` for all user-facing changes.
+4. Run targeted checks before each commit.
+5. Ask the user to test the static app before opening a pull request.
 
 ## Architecture
 
-This is a Streamlit web application that generates bingo cards from iNaturalist observation data. The application:
+The static app is browser-only and does not require a backend.
 
-1. **Data Fetching**: Uses the iNaturalist API via `pyinaturalist` to fetch research-grade species observations for a given place
-2. **Grid Generation**: Creates randomized bingo grids from the species pool, with optional "FREE" center square for 5×5 cards
-3. **PDF Generation**: Uses ReportLab to render multiple bingo cards into a single PDF with images, common names, and scientific names
-4. **Caching**: Implements Streamlit's `@st.cache_data` decorator for API responses with 12-hour TTL
+- `docs/index.html` contains the app shell.
+- `docs/css/styles.css` contains app and PDF capture styles.
+- `docs/js/api.js` fetches places and observations from iNaturalist.
+- `docs/js/bingo.js` builds deterministic bingo grids.
+- `docs/js/app.js` manages UI state and preview rendering.
+- `docs/js/pdf.js` captures PDF pages with `html2canvas` and assembles them
+  with `jsPDF`.
+- `docs/lib/` contains vendored browser dependencies.
 
-### Key Components
+The legacy Python modules remain in the repo, but they are no longer the main
+product. Keep changes there small and compatibility-focused unless the user
+explicitly asks for legacy work.
 
-- `fetch_top_species()`: Cached function that retrieves species data from iNaturalist API, filtering by rank level (species through variety) and photo licenses
-- `_build_grid()`: Generates randomized bingo card layouts with deterministic seeding
-- `render_pdf()`: Creates PDF documents using ReportLab Platypus, with dynamic page orientation based on card size and photo inclusion
-- `_lookup_place_id()`: Converts place names to iNaturalist place IDs using autocomplete API
+## GitHub Pages
 
-### Configuration
+The expected production URL is:
 
-- **Species filtering**: Only includes species-level taxa (rank levels 10-15) with allowed Creative Commons licenses
-- **Photo handling**: Downloads and scales images proportionally within 1.4 inch constraints
-- **PDF layout**: Landscape orientation for 5×5 cards with photos, portrait otherwise
+https://kylenessen.github.io/iNaturalist-Bingo-App/
+
+In repository settings, configure Pages to deploy from the primary branch and
+the `/docs` folder.

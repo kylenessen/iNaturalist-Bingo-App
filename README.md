@@ -1,117 +1,81 @@
 # iNaturalist Bingo App
 
-A Streamlit web application that generates educational bingo cards using real species observation data from iNaturalist. Create customizable PDF bingo cards featuring local wildlife species with photos, common names, and scientific names - perfect for nature education, field trips, and outdoor activities.
+A client-side web app for generating printable bingo cards from iNaturalist
+observation data. The current app lives in `docs/` and runs as static HTML,
+CSS, and JavaScript. It can be hosted directly on GitHub Pages.
 
-🌐 **Live App**: <https://inaturalist-bingo.streamlit.app/>
+Live app after GitHub Pages is enabled:
+
+https://kylenessen.github.io/iNaturalist-Bingo-App/
+
+The old Streamlit app is deprecated. Running `streamlit run main.py` now shows
+a migration notice that points users to the static app.
 
 ## Features
 
-- **Real Species Data**: Fetches research-grade species observations from iNaturalist for any geographic location
-- **Flexible Grid Sizes**: Support for 3×3, 5×5, 7×7, and 9×9 bingo card layouts
-- **Customizable Content**: Toggle display of photos, common names, and scientific names independently
-- **Batch Generation**: Create multiple unique cards (1-100) with different species combinations
-- **Seasonal Filtering**: Filter species by specific months for seasonal activities
-- **Professional PDFs**: Generate print-ready PDFs with optimized layouts and high-quality images
-- **No API Keys Required**: Uses public iNaturalist API with no registration needed
-
-## How It Works
-
-1. **Find Your Location**: 
-   - Go to [iNaturalist Places](https://www.inaturalist.org/places)
-   - Search for your desired location (e.g., "California")
-   - Copy the place ID from the URL (e.g., `california-us` from `https://www.inaturalist.org/places/california-us`)
-   - Alternatively, you can try entering a place name directly and the app will attempt to find it
-2. **Configure Your Cards**: Choose grid size, number of species, and display options
-3. **Generate**: Create 1-100 unique bingo cards with different species combinations
-4. **Download**: Get a PDF file ready for printing and use in the field
+- Real species data from the public iNaturalist API.
+- Grid sizes of 3x3, 5x5, 7x7, and 9x9.
+- Optional photos, common names, scientific names, and center FREE square.
+- Category and month filters for focused field trips.
+- Client-side PDF generation with `html2canvas` and `jsPDF`.
+- No API keys and no backend server.
 
 ## Local Development
 
-### Prerequisites
-
-- Python 3.9 or higher
-
-### Installation with uv (Recommended)
+Serve the static app from the `docs/` folder.
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/iNaturalist-Bingo-App.git
-cd iNaturalist-Bingo-App
-
-# Install dependencies
-uv sync
-
-# Run the application
-streamlit run main.py
+uv run python -m http.server 8765 --directory docs
 ```
 
-### Installation with pip
+Then open:
+
+http://127.0.0.1:8765
+
+The app has no build step. Edit files under `docs/`, then refresh the browser.
+
+## GitHub Pages
+
+The app is designed to be served from the repository `docs/` folder.
+
+In GitHub, open the repository settings. Go to Pages. Set the source to deploy
+from a branch. Choose the primary branch, then choose the `/docs` folder.
+
+After GitHub Pages finishes publishing, the app should be available at:
+
+https://kylenessen.github.io/iNaturalist-Bingo-App/
+
+## Project Structure
+
+- `docs/index.html` contains the static app shell.
+- `docs/css/styles.css` contains app and PDF capture styles.
+- `docs/js/app.js` wires the UI together.
+- `docs/js/api.js` talks to the iNaturalist API.
+- `docs/js/bingo.js` builds deterministic bingo grids.
+- `docs/js/pdf.js` renders PDF pages in the browser.
+- `docs/lib/` contains vendored browser PDF dependencies.
+- `main.py` is only a deprecation notice for old Streamlit users.
+
+The remaining Python modules are legacy support code from the original app.
+They are no longer the primary product surface.
+
+## Checks
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/iNaturalist-Bingo-App.git
-cd iNaturalist-Bingo-App
-
-# Create a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install streamlit requests pyinaturalist reportlab pillow
-
-# Run the application
-streamlit run main.py
+node --check docs/js/app.js
+node --check docs/js/api.js
+node --check docs/js/bingo.js
+node --check docs/js/config.js
+node --check docs/js/pdf.js
+uv run black main.py ui.py config.py pdf_renderer.py
+uv run flake8 main.py ui.py config.py pdf_renderer.py
 ```
-
-### Development Commands
-
-```bash
-# Install development dependencies (uv only)
-uv sync
-
-# Run tests
-pytest
-
-# Format code
-black .
-
-# Lint code
-flake8
-
-# Type checking
-mypy main.py
-```
-
-## Architecture
-
-The application is built with a modular architecture:
-
-- **`main.py`**: Application entry point
-- **`ui.py`**: Streamlit user interface components
-- **`inaturalist_client.py`**: iNaturalist API integration
-- **`bingo_generator.py`**: Bingo card generation logic
-- **`pdf_renderer.py`**: PDF creation using ReportLab
-- **`image_processor.py`**: Image processing and optimization
-- **`models.py`**: Data structures and type definitions
-- **`config.py`**: Application configuration and settings
-
-## Contributing
-
-This project was built for personal use, but contributions are welcome! Feel free to:
-
-- Fork the repository and make your own modifications
-- Submit issues for bugs or feature requests
-- Create pull requests for improvements
-
-Please note that I built this for my own needs and make no promises about implementing requested features, but I'm happy to review contributions from the community.
 
 ## License
 
-This project is released under the MIT License. You are free to copy, modify, distribute, and use this code for any purpose, commercial or non-commercial, with no restrictions.
+This project is released under the MIT License.
 
 ## Acknowledgments
 
-- **iNaturalist**: For providing the incredible species observation database and API
-- **Streamlit**: For the excellent web app framework
-- **ReportLab**: For PDF generation capabilities
-- **The iNaturalist Community**: For contributing millions of species observations that make this app possible
+Thanks to iNaturalist and its community for the observation data that makes
+this app useful for nature education and field trips.

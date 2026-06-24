@@ -1,7 +1,7 @@
 [project]
 name = "inaturalist-bingo-app"
 version = "0.1.0"
-description = "Streamlit application to generate bingo cards from iNaturalist observation data"
+description = "Static iNaturalist bingo card generator with a deprecated Streamlit pointer"
 requires-python = ">=3.9"
 dependencies = [
     "streamlit",

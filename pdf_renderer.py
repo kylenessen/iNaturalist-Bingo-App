@@ -137,7 +137,9 @@ class PDFRenderer:
             ("TOPPADDING", (0, 0), (-1, -1), padding),
             ("BOTTOMPADDING", (0, 0), (-1, -1), padding),
         ]
-        free_cell_styles = [("VALIGN", cell, cell, "MIDDLE") for cell in free_cells]
+        free_cell_styles = []
+        for cell in free_cells:
+            free_cell_styles.append(("VALIGN", cell, cell, "MIDDLE"))
         style_commands.extend(free_cell_styles)
         table.setStyle(TableStyle(style_commands))
 

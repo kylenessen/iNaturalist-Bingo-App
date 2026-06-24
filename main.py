@@ -1,31 +1,26 @@
-"""iNaturalist Bingo Card Generator - Main Application Entry Point.
-
-A Streamlit application to generate bingo cards from iNaturalist observation
-data.
-
-MVP features implemented:
-- Fetch top‑N research‑grade species (incl. sub‑species/varieties) for a
-  given iNaturalist place
-- Build 3 × 3 or 5 × 5 bingo grids, with optional centre "Free" square
-- Render multiple cards into a single PDF using ReportLab Platypus
-- Deliver PDF via st.download_button
-
-Future work (ignored for MVP):
-- Instructor branding / logos
-- Attribution legend page
-- Editable DOCX output
-- Custom species lists
-"""
+"""Deprecated Streamlit entry point for iNaturalist Bingo."""
 
 from __future__ import annotations
 
-from ui import BingoApp
+import streamlit as st
+
+STATIC_APP_URL = "https://kylenessen.github.io/iNaturalist-Bingo-App/"
+LOCAL_STATIC_APP_URL = "http://127.0.0.1:8765"
 
 
 def main() -> None:
-    """Main application entry point."""
-    app = BingoApp()
-    app.run()
+    """Show a migration notice for users who open the old Streamlit app."""
+    st.set_page_config(page_title="iNaturalist Bingo has moved")
+    st.title("iNaturalist Bingo has moved")
+    st.write(
+        "The Streamlit version is deprecated. The current app is a "
+        "client-side JavaScript app that runs from the static site."
+    )
+    st.link_button("Open the current app", STATIC_APP_URL)
+    st.caption(
+        "For local development, run the static app from the docs folder and "
+        f"open {LOCAL_STATIC_APP_URL}."
+    )
 
 
 if __name__ == "__main__":
