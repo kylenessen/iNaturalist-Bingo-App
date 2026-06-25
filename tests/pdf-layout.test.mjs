@@ -37,3 +37,26 @@ assert.ok(
     availableContentHeight,
   "expected image and labels to fit within the cell content height"
 );
+
+const nineByNineWithFooterLayout = getCellLayout(80, 94, {
+  photoOn: true,
+  commonOn: true,
+  sciOn: true,
+});
+const footerContentHeight =
+  94 - nineByNineWithFooterLayout.padding * 2 - PDF_CELL_BORDER_PX;
+const footerRequiredLabelHeight = requiredTwoLineLabelHeight(
+  nineByNineWithFooterLayout
+);
+
+assert.ok(
+  nineByNineWithFooterLayout.labelHeight >= footerRequiredLabelHeight,
+  `expected footer layout label height ${nineByNineWithFooterLayout.labelHeight} to fit ${footerRequiredLabelHeight}px of two-line labels`
+);
+assert.ok(
+  nineByNineWithFooterLayout.imageSize +
+    nineByNineWithFooterLayout.gap +
+    nineByNineWithFooterLayout.labelHeight <=
+    footerContentHeight,
+  "expected footer layout image and labels to fit within the cell content height"
+);

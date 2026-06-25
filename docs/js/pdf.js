@@ -16,6 +16,9 @@ const CELL_BORDER_PX = 2;
 const LABEL_LINE_HEIGHT = 1.12;
 const LABEL_LINES_PER_NAME = 2;
 const SCI_LABEL_BOTTOM_PAD_PX = 1;
+const METADATA_FOOTER_HEIGHT = 44;
+const METADATA_FOOTER_GAP = 8;
+const METADATA_FOOTER_FONT_SIZE = 10;
 
 function getProxiedImageUrl(imageUrl) {
   if (!imageUrl) return "";
@@ -135,15 +138,18 @@ function waitForImages(container) {
 /**
  * Render a single card into a DOM element sized for PDF capture.
  */
-function renderPdfCard(grid, gridSize, options, title) {
+function renderPdfCard(grid, gridSize, options, title, metadataFooterText) {
   const { photoOn, commonOn, sciOn } = options;
+  const showMetadataFooter = options.metadataFooterOn && metadataFooterText;
 
   const pageW = PAGE_W_IN * DPI;
   const pageH = PAGE_H_IN * DPI;
   const margin = MARGIN_IN * DPI;
   const usableW = pageW - 2 * margin;
   const titleHeight = 60;
-  const usableH = pageH - 2 * margin - titleHeight;
+  const footerHeight = showMetadataFooter ? METADATA_FOOTER_HEIGHT : 0;
+  const footerGap = showMetadataFooter ? METADATA_FOOTER_GAP : 0;
+  const usableH = pageH - 2 * margin - titleHeight - footerHeight - footerGap;
   const cellWidth = Math.floor(usableW / gridSize);
   const cellHeight = Math.floor(usableH / gridSize);
   const layout = getCellLayout(cellWidth, cellHeight, options);
@@ -264,6 +270,23 @@ function renderPdfCard(grid, gridSize, options, title) {
   }
 
   page.appendChild(card);
+
+  if (showMetadataFooter) {
+    const footer = document.createElement("div");
+    footer.className = "pdf-metadata-footer";
+    footer.textContent = metadataFooterText;
+    footer.style.width = gridW + "px";
+    footer.style.maxHeight = METADATA_FOOTER_HEIGHT + "px";
+    footer.style.margin = `${METADATA_FOOTER_GAP}px auto 0`;
+    footer.style.overflow = "hidden";
+    footer.style.color = "#777";
+    footer.style.fontSize = `${METADATA_FOOTER_FONT_SIZE}px`;
+    footer.style.lineHeight = "1.25";
+    footer.style.textAlign = "center";
+    footer.style.overflowWrap = "break-word";
+    page.appendChild(footer);
+  }
+
   return page;
 }
 
@@ -271,12 +294,28 @@ function renderPdfCard(grid, gridSize, options, title) {
  * Generate a PDF from an array of bingo card grids.
  * @param {Array<Array<Array>>} cards - Array of grids
  * @param {number} gridSize
- * @param {object} options - { photoOn, commonOn, sciOn }
+ * @param {object} options - { photoOn, commonOn, sciOn, metadataFooterOn }
  * @param {string} title
+ * @param {string|function} metadataFooterText
  * @param {function} onProgress - Called with (current, total)
  * @returns {Promise<Blob>} PDF blob
  */
-export async function generatePdf(cards, gridSize, options, title, onProgress) {
+export async function generatePdf(
+  cards,
+  gridSize,
+  options,
+  title,
+  metadataFooterText,
+  onProgress
+) {
+  let footerText = metadataFooterText || "";
+  let progressCallback = onProgress;
+
+  if (typeof metadataFooterText === "function") {
+    footerText = "";
+    progressCallback = metadataFooterText;
+  }
+
   const { jsPDF } = jspdf;
   const pdf = new jsPDF({ orientation: "portrait", unit: "in", format: "letter" });
 
@@ -285,7 +324,7 @@ export async function generatePdf(cards, gridSize, options, title, onProgress) {
   for (let i = 0; i < cards.length; i++) {
     if (i > 0) pdf.addPage();
 
-    const pageEl = renderPdfCard(cards[i], gridSize, options, title);
+    const pageEl = renderPdfCard(cards[i], gridSize, options, title, footerText);
     renderArea.appendChild(pageEl);
 
     await waitForImages(pageEl);
@@ -305,7 +344,7 @@ export async function generatePdf(cards, gridSize, options, title, onProgress) {
 
     renderArea.removeChild(pageEl);
 
-    if (onProgress) onProgress(i + 1, cards.length);
+    if (progressCallback) progressCallback(i + 1, cards.length);
   }
 
   return pdf.output("blob");
