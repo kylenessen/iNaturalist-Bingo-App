@@ -15,15 +15,20 @@
     <header class="app-header">
       <div class="app-title-row">
         <h1>iNaturalist Bingo Cards</h1>
-        <details class="app-info">
-          <summary class="app-info-toggle" aria-label="About iNaturalist Bingo Cards">?</summary>
-          <p id="app-info-blurb" class="app-info-blurb">
-            Make printable bingo cards from iNaturalist observations for a place you choose.
-            Pick a location, tune the species list, and download a set for a field trip,
-            class, nature walk, or weekend excursion.
-          </p>
-        </details>
+        <button
+          type="button"
+          id="app-info-toggle"
+          class="app-info-toggle"
+          aria-label="About iNaturalist Bingo Cards"
+          aria-expanded="false"
+          aria-controls="app-info-blurb"
+        >?</button>
       </div>
+      <p id="app-info-blurb" class="app-info-blurb hidden">
+        Make printable bingo cards from iNaturalist observations for a place you choose.
+        Pick a location, tune the species list, and download a set for a field trip,
+        class, nature walk, or weekend excursion.
+      </p>
     </header>
 
     <form id="bingo-form" autocomplete="off">

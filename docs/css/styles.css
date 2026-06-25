@@ -68,10 +68,6 @@ h1 {
   line-height: 0.95;
 }
 
-.app-info {
-  display: contents;
-}
-
 .app-info-toggle {
   display: inline-flex;
   width: 1.28rem;
@@ -84,21 +80,18 @@ h1 {
   border-radius: 50%;
   background: var(--surface-strong);
   color: var(--blue);
+  appearance: none;
   cursor: pointer;
   font-family: var(--body-font);
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1;
-  list-style: none;
+  padding: 0;
   transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
 }
 
-.app-info-toggle::-webkit-details-marker {
-  display: none;
-}
-
 .app-info-toggle:hover,
-.app-info[open] .app-info-toggle {
+.app-info-toggle[aria-expanded="true"] {
   background: var(--blue);
   color: #ffffff;
   transform: translateY(-1px);
@@ -110,8 +103,8 @@ h1 {
 }
 
 .app-info-blurb {
-  flex: 0 0 100%;
-  max-width: 42rem;
+  width: 100%;
+  max-width: none;
   margin-top: 0.75rem;
   padding: 0.78rem 0.9rem;
   border: 1px solid var(--border);
