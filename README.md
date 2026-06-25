@@ -16,6 +16,6 @@ This repo contains the static site for the app. The app lives in `docs/` so GitH
 
 iNaturalist Bingo Cards is a small web app built by me, [Kyle Nessen](https://www.inaturalist.org/people/221575), for anyone who wants to add a little fun to their next excursion. It is open source under an [MIT license](LICENSE).
 
-Please suggest features or report bugs on the [GitHub repo](https://github.com/kylenessen/iNaturalist-Bingo-App), or email me directly.
+Please suggest features or report bugs on the [GitHub repo](https://github.com/kylenessen/iNaturalist-Bingo-App). For anything else, [message me on iNaturalist](https://www.inaturalist.org/people/221575).
 
 This app is not affiliated with, endorsed by, or officially associated with iNaturalist.
