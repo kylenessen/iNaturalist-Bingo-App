@@ -4,6 +4,11 @@
  */
 
 import { API_BASE, SPECIES_RANK_LEVELS } from "./config.js";
+import {
+  appendLocationParams,
+  getLocationCacheKey,
+  normalizeLocationScope,
+} from "./location-scope.js";
 
 // In-memory cache keyed on request params
 const cache = new Map();
@@ -22,14 +27,13 @@ function buildFilterKeys(selectedMonths, selectedIconicTaxa) {
 }
 
 function buildSpeciesParams({
-  placeId,
+  locationScope,
   selectedMonths,
   selectedIconicTaxa,
   page,
   perPage,
 }) {
   const params = new URLSearchParams({
-    place_id: placeId,
     verifiable: "true",
     quality_grade: "research",
     geo: "true",
@@ -44,6 +48,7 @@ function buildSpeciesParams({
     params.set("iconic_taxa", selectedIconicTaxa.join(","));
   }
 
+  appendLocationParams(params, locationScope);
   return params;
 }
 
@@ -107,10 +112,17 @@ function formatPlace(r) {
  * Fetch species metadata for a place.
  * Returns { species, totalAvailable }.
  */
-export async function fetchSpeciesPool(placeId, topN, selectedMonths, selectedIconicTaxa) {
+export async function fetchSpeciesPool(
+  locationScope,
+  topN,
+  selectedMonths,
+  selectedIconicTaxa
+) {
+  const normalizedLocationScope = normalizeLocationScope(locationScope);
   const requestedCount = Math.max(0, Math.floor(Number(topN) || 0));
   const { monthKey, taxaKey } = buildFilterKeys(selectedMonths, selectedIconicTaxa);
-  const cacheKey = `${placeId}-${requestedCount}-${monthKey}-${taxaKey}`;
+  const locationKey = getLocationCacheKey(normalizedLocationScope);
+  const cacheKey = `${locationKey}-${requestedCount}-${monthKey}-${taxaKey}`;
 
   if (cache.has(cacheKey)) return cache.get(cacheKey);
 
@@ -125,7 +137,7 @@ export async function fetchSpeciesPool(placeId, topN, selectedMonths, selectedIc
 
   while (hasMore && (species.length < requestedCount || page === 1)) {
     const params = buildSpeciesParams({
-      placeId,
+      locationScope: normalizedLocationScope,
       selectedMonths,
       selectedIconicTaxa,
       page,
