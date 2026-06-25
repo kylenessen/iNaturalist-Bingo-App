@@ -158,6 +158,18 @@ function hideTopNWarning() {
   topNWarning.classList.add("hidden");
 }
 
+function renderSpeciesPoolRangeProgress() {
+  const min = Number(topNSlider.min);
+  const max = Number(topNSlider.max);
+  const value = Number(topNSlider.value);
+  const progress = max > min ? ((value - min) / (max - min)) * 100 : 0;
+
+  topNSlider.style.setProperty(
+    "--range-progress",
+    `${Math.min(100, Math.max(0, progress))}%`
+  );
+}
+
 function renderSpeciesPoolBounds(settings) {
   if (!settings.hasEnoughSpecies) {
     topNBounds.textContent =
@@ -211,6 +223,7 @@ function syncSpeciesPoolControls(value = null, options = {}) {
   topNSlider.step = "1";
   topNSlider.disabled = !settings.hasEnoughSpecies;
   topNSlider.value = controlValue;
+  renderSpeciesPoolRangeProgress();
 
   topNInput.min = min;
   topNInput.max = max;
@@ -540,6 +553,7 @@ topNInput.addEventListener("input", () => {
 
   if (rawValue >= settings.min && rawValue <= settings.max) {
     topNSlider.value = roundedValue;
+    renderSpeciesPoolRangeProgress();
     debouncedRefreshRareSpeciesWarning();
   }
 });
