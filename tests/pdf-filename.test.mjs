@@ -8,8 +8,8 @@ assert.equal(
 );
 
 assert.equal(
-  getPdfFilename("Bingo: Field Trip / Spring"),
-  "inat_bingo_cards_Bingo_Field_Trip_Spring.pdf"
+  getPdfFilename("Bingo: Field Trip / Spring, Birds & Blooms"),
+  "inat_bingo_cards_Bingo_Field_Trip_Spring_Birds_Blooms.pdf"
 );
 
 assert.equal(getPdfFilename("   "), "inat_bingo_cards.pdf");

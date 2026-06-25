@@ -24,7 +24,7 @@ export function getPdfFilename(title) {
     .trim()
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[\x00-\x1f\x7f<>:"\/\\|?*]+/g, " ")
+    .replace(/[^A-Za-z0-9_-]+/g, " ")
     .replace(/\s+/g, "_")
     .replace(/^_+|_+$/g, "")
     .slice(0, PDF_TITLE_FILENAME_MAX_LENGTH)
