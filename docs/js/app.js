@@ -46,7 +46,7 @@ const taxaCheckboxes = $("#taxa-checkboxes");
 const monthEnabled = $("#month-filter-enabled");
 const monthWrapper = $("#month-select-wrapper");
 const monthCheckboxes = $("#month-checkboxes");
-const gridSizeSelect = $("#grid-size");
+const gridSizeControl = $("#grid-size");
 const topNSlider = $("#top-n");
 const topNValue = $("#top-n-value");
 const topNInput = $("#top-n-input");
@@ -137,9 +137,13 @@ function getSelectedFilters() {
   return { selectedMonths, selectedIconicTaxa };
 }
 
+function getSelectedGridSize() {
+  return Number(gridSizeControl.querySelector("input:checked")?.value || 5);
+}
+
 function getCurrentSpeciesPoolSettings(value = null) {
   return getSpeciesPoolSettings({
-    gridSize: Number(gridSizeSelect.value),
+    gridSize: getSelectedGridSize(),
     freeSquare: freeSquareCheck.checked,
     availableSpecies: state.speciesAvailability?.totalAvailable ?? null,
     value,
@@ -182,14 +186,8 @@ function renderRareSpeciesWarning(species, value) {
 
   setTopNWarning(
     `This pool reaches species with fewer than ` +
-    `${RARE_OBSERVATION_THRESHOLD} observations here. ` +
-    `The last included species has ` +
-    `${formatObservationCount(cutoff.observationCount)}.`
+    `${RARE_OBSERVATION_THRESHOLD} observations here.`
   );
-}
-
-function formatObservationCount(count) {
-  return count === 1 ? "1 observation" : `${count} observations`;
 }
 
 function getEffectiveAvailableSpecies(speciesPool, requestedCount) {
@@ -300,7 +298,7 @@ async function refreshSpeciesAvailability(options = {}) {
   const requestId = ++state.speciesSettingsRequestId;
   const { selectedMonths, selectedIconicTaxa } = getSelectedFilters();
   const defaultSettings = getSpeciesPoolSettings({
-    gridSize: Number(gridSizeSelect.value),
+    gridSize: getSelectedGridSize(),
     freeSquare: freeSquareCheck.checked,
   });
 
@@ -552,7 +550,7 @@ topNInput.addEventListener("change", () => {
   syncSpeciesPoolControls(topNInput.value);
 });
 
-gridSizeSelect.addEventListener("change", () => {
+gridSizeControl.addEventListener("change", () => {
   syncSpeciesPoolControls(null);
 });
 
@@ -684,7 +682,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const gridSize = Number(gridSizeSelect.value);
+  const gridSize = getSelectedGridSize();
   const requestedSpeciesSettings = syncSpeciesPoolControls(topNInput.value, {
     checkRare: false,
   });

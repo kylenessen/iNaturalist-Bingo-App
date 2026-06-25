@@ -8,8 +8,8 @@ const FIT_PADDING = [24, 24];
 const MAX_FIT_ZOOM = 16;
 
 const BOUNDARY_STYLE = {
-  color: "#315f4c",
-  fillColor: "#315f4c",
+  color: "#555555",
+  fillColor: "#555555",
   fillOpacity: 0.18,
   opacity: 1,
   weight: 3,

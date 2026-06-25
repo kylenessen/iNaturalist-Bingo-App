@@ -48,10 +48,9 @@
         </div>
       </fieldset>
 
-      <!-- Main Controls -->
-      <fieldset>
-        <legend>Card Settings</legend>
-
+      <!-- Place Controls -->
+      <fieldset class="place-settings-fieldset">
+        <legend>Place Settings</legend>
         <div class="field place-search-field">
           <label for="place-input">iNaturalist place</label>
           <input type="text" id="place-input" placeholder="Start typing a place name…">
@@ -71,38 +70,77 @@
             </div>
           </details>
         </div>
+      </fieldset>
 
-        <div class="field">
-          <label for="grid-size">Card size</label>
-          <select id="grid-size">
-            <option value="3">3 × 3</option>
-            <option value="5" selected>5 × 5</option>
-            <option value="7">7 × 7</option>
-            <option value="9">9 × 9</option>
-          </select>
+      <!-- Card Controls -->
+      <fieldset class="card-settings-fieldset">
+        <legend>Card Settings</legend>
+
+        <div class="field grid-size-field">
+          <div class="field-label">Card size</div>
+          <div id="grid-size" class="grid-size-options" role="radiogroup" aria-label="Card size">
+            <label class="grid-size-option">
+              <input type="radio" name="grid-size" value="3">
+              <span class="grid-size-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" focusable="false">
+                  <path d="M6.33 2v14M11.67 2v14M2 6.33h14M2 11.67h14"></path>
+                </svg>
+              </span>
+              <span>3 × 3</span>
+            </label>
+            <label class="grid-size-option">
+              <input type="radio" name="grid-size" value="5" checked>
+              <span class="grid-size-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" focusable="false">
+                  <path d="M4.8 2v14M7.6 2v14M10.4 2v14M13.2 2v14M2 4.8h14M2 7.6h14M2 10.4h14M2 13.2h14"></path>
+                </svg>
+              </span>
+              <span>5 × 5</span>
+            </label>
+            <label class="grid-size-option">
+              <input type="radio" name="grid-size" value="7">
+              <span class="grid-size-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" focusable="false">
+                  <path d="M4 2v14M6.33 2v14M8.67 2v14M11 2v14M13.33 2v14M2 4h14M2 6.33h14M2 8.67h14M2 11h14M2 13.33h14"></path>
+                </svg>
+              </span>
+              <span>7 × 7</span>
+            </label>
+            <label class="grid-size-option">
+              <input type="radio" name="grid-size" value="9">
+              <span class="grid-size-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" focusable="false">
+                  <path d="M3.56 2v14M5.33 2v14M7.11 2v14M8.89 2v14M10.67 2v14M12.44 2v14M14.22 2v14M2 3.56h14M2 5.33h14M2 7.11h14M2 8.89h14M2 10.67h14M2 12.44h14M2 14.22h14"></path>
+                </svg>
+              </span>
+              <span>9 × 9</span>
+            </label>
+          </div>
         </div>
 
-        <div class="field">
+        <div class="field species-pool-field">
           <label for="top-n">Species pool size <span id="top-n-value">75</span></label>
           <div class="species-pool-controls">
             <input type="range" id="top-n" min="25" max="100" value="75" step="1">
             <input type="number" id="top-n-input" min="25" max="100" value="75" step="1">
           </div>
-          <small id="top-n-bounds">25 minimum</small>
+          <small id="top-n-bounds" class="hidden">25 minimum</small>
           <small id="top-n-warning" class="field-warning hidden" role="status" aria-live="polite"></small>
         </div>
 
-        <div class="field">
-          <label for="num-cards">Number of cards</label>
-          <input type="number" id="num-cards" min="1" max="100" value="10">
+        <div class="inline-field-grid">
+          <div class="field">
+            <label for="num-cards">Number of cards</label>
+            <input type="number" id="num-cards" min="1" max="100" value="10">
+          </div>
+
+          <div class="field">
+            <label for="seed">Random seed (optional)</label>
+            <input type="number" id="seed" value="0">
+          </div>
         </div>
 
-        <div class="field">
-          <label for="seed">Random seed (optional)</label>
-          <input type="number" id="seed" value="0">
-        </div>
-
-        <div class="field">
+        <div class="field option-row-field">
           <label class="inline-check"><input type="checkbox" id="free-square"><span>Include centre FREE square</span></label>
         </div>
       </fieldset>
@@ -111,14 +149,16 @@
       <fieldset>
         <legend>Display Options</legend>
 
-        <div class="field">
-          <label class="inline-check"><input type="checkbox" id="photo-on" checked><span>Display photo</span></label>
-        </div>
-        <div class="field">
-          <label class="inline-check"><input type="checkbox" id="common-on" checked><span>Display common name</span></label>
-        </div>
-        <div class="field">
-          <label class="inline-check"><input type="checkbox" id="sci-on" checked><span>Display scientific name</span></label>
+        <div class="display-option-row">
+          <div class="field option-row-field">
+            <label class="inline-check"><input type="checkbox" id="photo-on" checked><span>Photo</span></label>
+          </div>
+          <div class="field option-row-field">
+            <label class="inline-check"><input type="checkbox" id="common-on" checked><span>Common name</span></label>
+          </div>
+          <div class="field option-row-field">
+            <label class="inline-check"><input type="checkbox" id="sci-on" checked><span>Scientific name</span></label>
+          </div>
         </div>
         <div class="field">
           <label for="doc-title">Document title</label>
