@@ -1,72 +1,152 @@
 /* ============================================================
-   iNaturalist Bingo Card Generator – Styles
+   iNaturalist Bingo Card Generator - Styles
    ============================================================ */
 
-/* --- Reset & Base --- */
+:root {
+  --page-bg: #eef5f2;
+  --surface: #fffdf8;
+  --surface-strong: #ffffff;
+  --surface-muted: #eff6f2;
+  --ink: #1f2d27;
+  --muted: #637269;
+  --border: #c9d8cf;
+  --border-strong: #9fb9aa;
+  --brand: #2f6f55;
+  --brand-dark: #214f3d;
+  --brand-soft: #dfeee6;
+  --accent: #b65f3b;
+  --accent-soft: #f8e7d8;
+  --blue: #2f6f91;
+  --blue-dark: #214f68;
+  --danger: #b43337;
+  --warning: #a66f16;
+  --shadow: 0 18px 55px rgba(31, 45, 39, 0.1);
+}
+
+/* --- Reset and Base --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+  min-height: 100%;
+}
+
 body {
+  min-height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  background:
+    linear-gradient(180deg, rgba(47, 111, 85, 0.13) 0, rgba(47, 111, 85, 0) 18rem),
+    linear-gradient(135deg, #eef5f2 0%, #f8f6ef 52%, #edf4f7 100%);
+  color: var(--ink);
   line-height: 1.5;
 }
 
 .container {
-  max-width: 720px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 2.75rem 1.25rem 3rem;
+}
+
+.app-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(47, 111, 85, 0.18);
 }
 
 h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #2c6b2f;
+  color: var(--ink);
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 5.5rem;
+  height: 0.28rem;
+  margin-top: 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--accent), var(--blue));
 }
 
 h2 {
   margin-bottom: 1rem;
-  color: #2c6b2f;
+  color: var(--brand-dark);
+  font-size: 1.55rem;
+  letter-spacing: 0;
 }
 
 /* --- Form --- */
+form {
+  display: grid;
+  gap: 1rem;
+}
+
 fieldset {
-  border: 1px solid #ddd;
+  border: 1px solid rgba(159, 185, 170, 0.75);
   border-radius: 8px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-  background: #fff;
+  padding: 1.25rem;
+  background: rgba(255, 253, 248, 0.9);
+  box-shadow: var(--shadow);
 }
 
 legend {
-  font-weight: 600;
-  padding: 0 0.5rem;
-  color: #555;
+  padding: 0 0.45rem;
+  color: var(--brand-dark);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .field {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.field label {
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label:not(.filter-toggle):not(.inline-check):not(.checkbox-chip) {
   display: block;
+  color: var(--ink);
   font-size: 0.9rem;
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
 }
 
 .field input[type="text"],
 .field input[type="number"],
-.field select,
-.field input[type="range"] {
+.field select {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.95rem;
+  min-height: 2.75rem;
+  padding: 0.64rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 0.97rem;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.field select {
+  color: var(--ink);
+}
+
+.field input[type="text"]:focus,
+.field input[type="number"]:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--brand);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.15);
 }
 
 .field input[type="range"] {
+  width: 100%;
   padding: 0;
+  accent-color: var(--brand);
 }
 
 .species-pool-controls {
@@ -82,7 +162,7 @@ legend {
 
 .field small {
   display: block;
-  color: #666;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -92,10 +172,10 @@ legend {
   gap: 0.5rem;
   align-items: flex-start;
   padding: 0.65rem 0.75rem;
-  border: 1px solid #d8a900;
+  border: 1px solid rgba(166, 111, 22, 0.45);
   border-radius: 6px;
-  background: #fff5c2;
-  color: #5d4200;
+  background: #fff5cf;
+  color: #5c3c08;
   font-weight: 600;
 }
 
@@ -109,35 +189,209 @@ legend {
   justify-content: center;
   margin-top: 0.05rem;
   border-radius: 50%;
-  background: #d8a900;
-  color: #3d2a00;
+  background: var(--warning);
+  color: #fff8df;
   font-size: 0.85rem;
   font-weight: 800;
   line-height: 1;
 }
 
-/* Checkboxes inside labels */
-.field label input[type="checkbox"] {
-  margin-right: 0.4rem;
-  vertical-align: middle;
+/* Filter controls */
+.filter-fieldset {
+  border-color: rgba(159, 185, 170, 0.95);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(239, 246, 242, 0.96)),
+    var(--surface);
 }
 
-/* Multi-select checkbox groups */
+.filter-option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.filter-option {
+  margin-bottom: 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(201, 216, 207, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.filter-option:has(.filter-toggle input:checked) {
+  border-color: rgba(47, 111, 85, 0.6);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 26px rgba(31, 45, 39, 0.08);
+}
+
+.filter-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.97rem;
+  font-weight: 800;
+}
+
+.filter-toggle input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.toggle-track {
+  position: relative;
+  width: 2.55rem;
+  height: 1.42rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: #dbe5df;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 0.14rem;
+  left: 0.14rem;
+  width: 1.02rem;
+  height: 1.02rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(31, 45, 39, 0.24);
+  transition: transform 0.16s ease;
+}
+
+.filter-toggle input:checked + .toggle-track {
+  border-color: var(--brand-dark);
+  background: var(--brand);
+}
+
+.filter-toggle input:checked + .toggle-track::after {
+  transform: translateX(1.1rem);
+}
+
+.filter-toggle:focus-within .toggle-track {
+  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.18);
+}
+
 .multi-select-wrapper {
-  margin-top: 0.5rem;
-  padding-left: 1.5rem;
+  margin-top: 0.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(201, 216, 207, 0.82);
+}
+
+.option-group-label {
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  margin-top: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.6rem, 1fr));
+  gap: 0.5rem;
 }
 
-.checkbox-group label {
-  font-size: 0.85rem;
-  white-space: nowrap;
+.checkbox-chip {
+  display: flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.62rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-strong);
+  color: #3f5047;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.2;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+  user-select: none;
+}
+
+.checkbox-chip:hover {
+  border-color: var(--border-strong);
+  background: #f7fbf8;
+}
+
+.checkbox-chip:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.15);
+}
+
+.checkbox-chip input {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.02rem;
+  height: 1.02rem;
+  margin: 0;
+  place-content: center;
+  appearance: none;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.checkbox-chip input::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.68rem;
+  margin-top: -0.08rem;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.12s ease;
+}
+
+.checkbox-chip input:checked {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+
+.checkbox-chip input:checked::before {
+  transform: rotate(45deg) scale(1);
+}
+
+.checkbox-chip:has(input:checked) {
+  border-color: rgba(47, 111, 85, 0.72);
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+}
+
+.inline-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.62rem;
+  border-radius: 6px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.inline-check:hover {
+  background: rgba(223, 238, 230, 0.65);
+}
+
+.inline-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--brand);
 }
 
 /* --- Place Type-Ahead --- */
@@ -151,14 +405,14 @@ legend {
   top: 100%;
   left: 0;
   right: 0;
-  background: #fff;
-  border: 1px solid #ccc;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
   border-top: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 6px 6px;
   max-height: 240px;
   overflow-y: auto;
   z-index: 100;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 16px 35px rgba(31, 45, 39, 0.14);
 }
 
 .dropdown li {
@@ -169,11 +423,11 @@ legend {
 
 .dropdown li:hover,
 .dropdown li.active {
-  background: #e8f5e9;
+  background: var(--brand-soft);
 }
 
 .dropdown li .place-type {
-  color: #888;
+  color: var(--muted);
   font-size: 0.8rem;
   margin-left: 0.5rem;
 }
@@ -181,7 +435,7 @@ legend {
 /* --- Place Boundary Map --- */
 .place-map-panel {
   margin-top: 0.6rem;
-  border: 1px solid #cddbd0;
+  border: 1px solid var(--border);
   border-radius: 6px;
   background: #fbfdfb;
   overflow: hidden;
@@ -194,14 +448,14 @@ legend {
   align-items: center;
   min-height: 2.6rem;
   padding: 0.6rem 0.75rem;
-  color: #245524;
+  color: var(--brand-dark);
   cursor: pointer;
   font-weight: 700;
 }
 
 .place-map-title {
   min-width: 0;
-  color: #555;
+  color: var(--muted);
   font-size: 0.85rem;
   font-weight: 500;
   overflow: hidden;
@@ -212,7 +466,7 @@ legend {
 
 .place-map-body {
   padding: 0.75rem;
-  border-top: 1px solid #dce6de;
+  border-top: 1px solid var(--border);
 }
 
 .place-map-actions {
@@ -223,26 +477,26 @@ legend {
 
 .secondary-btn {
   padding: 0.4rem 0.7rem;
-  border: 1px solid #b9c8bd;
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
-  background: #fff;
-  color: #245524;
+  background: var(--surface-strong);
+  color: var(--brand-dark);
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .secondary-btn:hover {
-  background: #e8f5e9;
+  background: var(--brand-soft);
 }
 
 .place-map {
   width: 100%;
   height: min(52vh, 360px);
   min-height: 320px;
-  border: 1px solid #cfd8d2;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #eef3ef;
+  background: var(--surface-muted);
   overflow: hidden;
 }
 
@@ -267,17 +521,26 @@ legend {
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  background: #2c6b2f;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
+  box-shadow: 0 12px 22px rgba(33, 79, 61, 0.2);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
 }
 
-#generate-btn:hover { background: #245524; }
+#generate-btn:hover {
+  box-shadow: 0 15px 26px rgba(33, 79, 61, 0.28);
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
 #generate-btn:disabled {
-  background: #aaa;
+  background: #9aa59f;
+  box-shadow: none;
   cursor: not-allowed;
+  filter: none;
+  transform: none;
 }
 
 .download-btn {
@@ -289,20 +552,26 @@ legend {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background: #1565c0;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
-.download-btn:hover { background: #0d47a1; }
+.download-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
 .download-btn:disabled {
-  background: #aaa;
+  background: #9aa59f;
   cursor: not-allowed;
+  filter: none;
+  transform: none;
 }
 
-/* --- Status / Error --- */
+/* --- Status and Error --- */
 .status, .error {
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -311,15 +580,15 @@ legend {
 }
 
 .status {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #a5d6a7;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  border: 1px solid rgba(47, 111, 85, 0.25);
 }
 
 .error {
-  background: #fce4ec;
-  color: #c62828;
-  border: 1px solid #ef9a9a;
+  background: #fde9e3;
+  color: var(--danger);
+  border: 1px solid rgba(180, 51, 55, 0.28);
 }
 
 /* --- Preview Navigation --- */
@@ -334,14 +603,15 @@ legend {
 .preview-nav button {
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-strong);
+  color: var(--ink);
   cursor: pointer;
 }
 
-.preview-nav button:hover:not(:disabled) { background: #e8f5e9; }
-.preview-nav button:disabled { color: #aaa; cursor: default; }
+.preview-nav button:hover:not(:disabled) { background: var(--brand-soft); }
+.preview-nav button:disabled { color: #9aa59f; cursor: default; }
 
 #card-counter {
   font-weight: 600;
@@ -352,15 +622,16 @@ legend {
 /* --- Bingo Card Grid (Preview) --- */
 .bingo-card {
   display: grid;
-  border: 2px solid #333;
+  border: 2px solid var(--ink);
   margin: 0 auto 1rem;
-  background: #fff;
+  background: var(--surface-strong);
   max-width: 100%;
   overflow: hidden;
+  box-shadow: 0 15px 35px rgba(31, 45, 39, 0.12);
 }
 
 .bingo-cell {
-  border: 1px solid #999;
+  border: 1px solid rgba(31, 45, 39, 0.38);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -391,14 +662,14 @@ legend {
   font-size: 0.65em;
   font-style: italic;
   line-height: 1.2;
-  color: #555;
+  color: var(--muted);
   word-break: break-word;
 }
 
 .bingo-cell.free-cell {
   font-size: 1.2em;
   font-weight: 700;
-  color: #2c6b2f;
+  color: var(--brand-dark);
 }
 
 /* Dynamic grid sizing for preview */
@@ -409,7 +680,7 @@ legend {
 
 /* Loading skeleton */
 .bingo-cell img.loading {
-  background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
+  background: linear-gradient(90deg, #eef3ef 25%, #dde8e1 50%, #eef3ef 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -456,12 +727,34 @@ legend {
 .hidden { display: none !important; }
 
 /* --- Responsive --- */
+@media (max-width: 760px) {
+  .container {
+    padding: 1.5rem 1rem 2.25rem;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+  }
+
+  fieldset {
+    padding: 1rem;
+  }
+
+  .filter-option-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 600px) {
-  .container { margin: 1rem auto; }
-  h1 { font-size: 1.4rem; }
-  fieldset { padding: 0.75rem; }
+  .container { padding: 1rem 0.85rem 2rem; }
+  h1 { font-size: 1.65rem; }
   .species-pool-controls { grid-template-columns: 1fr; }
   .species-pool-controls input[type="number"] { text-align: left; }
+  .checkbox-group { grid-template-columns: 1fr; }
+  .preview-nav {
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
   .place-map-panel summary {
     grid-template-columns: 1fr;
     gap: 0.15rem;

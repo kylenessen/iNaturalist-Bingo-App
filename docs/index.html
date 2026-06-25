@@ -8,31 +8,39 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>iNaturalist Bingo Card Generator</h1>
+  <main class="container">
+    <header class="app-header">
+      <h1>iNaturalist Bingo Card Generator</h1>
+    </header>
 
     <form id="bingo-form" autocomplete="off">
       <!-- Filtering Options -->
-      <fieldset>
+      <fieldset class="filter-fieldset">
         <legend>Filtering Options</legend>
 
-        <div class="field">
-          <label>
-            <input type="checkbox" id="taxa-filter-enabled"> Filter by category
-          </label>
-          <div id="taxa-select-wrapper" class="multi-select-wrapper hidden">
-            <label for="taxa-select">Select categories to include</label>
-            <div id="taxa-checkboxes" class="checkbox-group"></div>
+        <div class="filter-option-grid">
+          <div class="field filter-option">
+            <label class="filter-toggle">
+              <input type="checkbox" id="taxa-filter-enabled">
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span>Filter by category</span>
+            </label>
+            <div id="taxa-select-wrapper" class="multi-select-wrapper hidden">
+              <div class="option-group-label">Categories to include</div>
+              <div id="taxa-checkboxes" class="checkbox-group" aria-label="Categories to include"></div>
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label>
-            <input type="checkbox" id="month-filter-enabled"> Filter by months
-          </label>
-          <div id="month-select-wrapper" class="multi-select-wrapper hidden">
-            <label for="month-select">Select months to include</label>
-            <div id="month-checkboxes" class="checkbox-group"></div>
+          <div class="field filter-option">
+            <label class="filter-toggle">
+              <input type="checkbox" id="month-filter-enabled">
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span>Filter by months</span>
+            </label>
+            <div id="month-select-wrapper" class="multi-select-wrapper hidden">
+              <div class="option-group-label">Months to include</div>
+              <div id="month-checkboxes" class="checkbox-group" aria-label="Months to include"></div>
+            </div>
           </div>
         </div>
       </fieldset>
@@ -93,7 +101,7 @@
         </div>
 
         <div class="field">
-          <label><input type="checkbox" id="free-square"> Include centre FREE square</label>
+          <label class="inline-check"><input type="checkbox" id="free-square"><span>Include centre FREE square</span></label>
         </div>
       </fieldset>
 
@@ -102,13 +110,13 @@
         <legend>Display Options</legend>
 
         <div class="field">
-          <label><input type="checkbox" id="photo-on" checked> Display photo</label>
+          <label class="inline-check"><input type="checkbox" id="photo-on" checked><span>Display photo</span></label>
         </div>
         <div class="field">
-          <label><input type="checkbox" id="common-on" checked> Display common name</label>
+          <label class="inline-check"><input type="checkbox" id="common-on" checked><span>Display common name</span></label>
         </div>
         <div class="field">
-          <label><input type="checkbox" id="sci-on" checked> Display scientific name</label>
+          <label class="inline-check"><input type="checkbox" id="sci-on" checked><span>Display scientific name</span></label>
         </div>
         <div class="field">
           <label for="doc-title">Document title</label>
@@ -137,7 +145,7 @@
 
     <!-- Hidden container for PDF rendering -->
     <div id="pdf-render-area" class="pdf-render-area"></div>
-  </div>
+  </main>
 
   <script src="lib/jspdf.umd.min.js"></script>
   <script src="lib/html2canvas.min.js"></script>

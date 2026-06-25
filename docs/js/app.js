@@ -349,24 +349,30 @@ function initFilters() {
   // Taxa checkboxes
   for (const [key, label] of Object.entries(ICONIC_TAXA)) {
     const lbl = document.createElement("label");
+    const text = document.createElement("span");
     const cb = document.createElement("input");
+    lbl.className = "checkbox-chip";
     cb.type = "checkbox";
     cb.value = key;
     cb.name = "iconic-taxa";
+    text.textContent = label;
     lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(" " + label));
+    lbl.appendChild(text);
     taxaCheckboxes.appendChild(lbl);
   }
 
   // Month checkboxes
   MONTH_NAMES.forEach((name, i) => {
     const lbl = document.createElement("label");
+    const text = document.createElement("span");
     const cb = document.createElement("input");
+    lbl.className = "checkbox-chip";
     cb.type = "checkbox";
     cb.value = String(i + 1);
     cb.name = "month";
+    text.textContent = name;
     lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(" " + name));
+    lbl.appendChild(text);
     monthCheckboxes.appendChild(lbl);
   });
 }
