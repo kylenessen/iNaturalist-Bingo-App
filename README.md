@@ -10,7 +10,7 @@ Students love this, and it is a guaranteed hit when you can point out a coveted 
 
 I made this little app for myself, but enough people kept asking for the link that I thought I should build it out properly. I hope it is useful to you and whatever group you are sharing these bingo cards with.
 
-This repo contains the static site for the app. The app lives in `docs/` so GitHub Pages can serve it directly.
+This repo contains the static site for the app. The app lives in `docs/` so GitHub Pages can serve it directly. The root Streamlit app only redirects old links to the current app.
 
 ## Caveats
 

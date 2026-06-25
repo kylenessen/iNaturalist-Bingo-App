@@ -1,0 +1,8 @@
+[project]
+name = "inaturalist-bingo-app"
+version = "0.1.0"
+description = "Static iNaturalist bingo app with a Streamlit redirect for the old link"
+requires-python = ">=3.9"
+dependencies = [
+    "streamlit",
+]
