@@ -54,16 +54,22 @@ body {
 .app-title-row {
   display: flex;
   align-items: flex-start;
+  flex-wrap: wrap;
   gap: 0.45rem;
 }
 
 h1 {
+  min-width: 0;
   font-family: var(--title-font);
   color: var(--ink);
   font-size: 2.65rem;
   font-weight: 300;
   letter-spacing: 0;
   line-height: 0.95;
+}
+
+.app-info {
+  display: contents;
 }
 
 .app-info-toggle {
@@ -83,11 +89,16 @@ h1 {
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1;
+  list-style: none;
   transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
 }
 
+.app-info-toggle::-webkit-details-marker {
+  display: none;
+}
+
 .app-info-toggle:hover,
-.app-info-toggle[aria-expanded="true"] {
+.app-info[open] .app-info-toggle {
   background: var(--blue);
   color: #ffffff;
   transform: translateY(-1px);
@@ -99,6 +110,7 @@ h1 {
 }
 
 .app-info-blurb {
+  flex: 0 0 100%;
   max-width: 42rem;
   margin-top: 0.75rem;
   padding: 0.78rem 0.9rem;
@@ -944,7 +956,7 @@ legend + * {
 
 @media (max-width: 600px) {
   .container { padding: 1rem 0.85rem 2rem; }
-  h1 { font-size: 2rem; }
+  h1 { font-size: 1.85rem; }
   .species-pool-controls { grid-template-columns: 1fr; }
   .species-pool-controls input[type="number"] { text-align: left; }
   .filter-option-grid { grid-template-columns: 1fr; }
@@ -964,4 +976,8 @@ legend + * {
   }
   .bingo-cell .common-name { font-size: 0.6em; }
   .bingo-cell .sci-name { font-size: 0.55em; }
+}
+
+@media (max-width: 340px) {
+  h1 { font-size: 1.55rem; }
 }

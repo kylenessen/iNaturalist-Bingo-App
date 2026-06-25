@@ -32,8 +32,6 @@ const state = {
 
 // ---- DOM references ----
 const $ = (sel) => document.querySelector(sel);
-const appInfoToggle = $("#app-info-toggle");
-const appInfoBlurb = $("#app-info-blurb");
 const placeInput = $("#place-input");
 const placeDropdown = $("#place-dropdown");
 const placeIdInput = $("#place-id");
@@ -93,13 +91,6 @@ function hideMessages() {
   statusEl.classList.add("hidden");
   errorEl.classList.add("hidden");
 }
-
-appInfoToggle.addEventListener("click", () => {
-  const isExpanded = appInfoToggle.getAttribute("aria-expanded") === "true";
-
-  appInfoToggle.setAttribute("aria-expanded", String(!isExpanded));
-  appInfoBlurb.classList.toggle("hidden", isExpanded);
-});
 
 let docTitleDefault = docTitleInput.value;
 

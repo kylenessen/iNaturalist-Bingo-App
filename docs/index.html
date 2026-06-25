@@ -15,20 +15,15 @@
     <header class="app-header">
       <div class="app-title-row">
         <h1>iNaturalist Bingo Cards</h1>
-        <button
-          type="button"
-          id="app-info-toggle"
-          class="app-info-toggle"
-          aria-label="About iNaturalist Bingo Cards"
-          aria-expanded="false"
-          aria-controls="app-info-blurb"
-        >?</button>
+        <details class="app-info">
+          <summary class="app-info-toggle" aria-label="About iNaturalist Bingo Cards">?</summary>
+          <p id="app-info-blurb" class="app-info-blurb">
+            Make printable bingo cards from iNaturalist observations for a place you choose.
+            Pick a location, tune the species list, and download a set for a field trip,
+            class, nature walk, or weekend excursion.
+          </p>
+        </details>
       </div>
-      <p id="app-info-blurb" class="app-info-blurb hidden">
-        Make printable bingo cards from iNaturalist observations for a place you choose.
-        Pick a location, tune the species list, and download a set for a field trip,
-        class, nature walk, or weekend excursion.
-      </p>
     </header>
 
     <form id="bingo-form" autocomplete="off">
@@ -208,7 +203,7 @@
       <p>
         iNaturalist Bingo Cards is a small web app built by me,
         <a href="https://www.inaturalist.org/people/221575" target="_blank" rel="noopener noreferrer">Kyle Nessen</a>,
-        for anyone who wants to add a little fun to their next excursion. It is open source under the permissive MIT license.
+        for anyone who wants to add a little fun to their next excursion. It is open source under an MIT license.
         Please suggest features or report bugs on the
         <a href="https://github.com/kylenessen/iNaturalist-Bingo-App" target="_blank" rel="noopener noreferrer">GitHub repo</a>,
         or email me directly. This app is not affiliated with, endorsed by, or officially associated with iNaturalist.
