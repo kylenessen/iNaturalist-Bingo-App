@@ -5,7 +5,7 @@
 
 export const SPECIES_POOL_RATIO = 3;
 export const RARE_OBSERVATION_THRESHOLD = 5;
-export const FALLBACK_SPECIES_MAX = 100;
+export const FALLBACK_SPECIES_RANGE_RATIO = 3;
 
 function normalizeCount(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -49,9 +49,10 @@ export function getSpeciesPoolSettings({
     };
   }
 
-  const max = knownAvailableSpecies === null
-    ? Math.max(idealSpecies, FALLBACK_SPECIES_MAX)
-    : knownAvailableSpecies;
+  const fallbackMax =
+    requiredSpecies +
+    (idealSpecies - requiredSpecies) * FALLBACK_SPECIES_RANGE_RATIO;
+  const max = knownAvailableSpecies === null ? fallbackMax : knownAvailableSpecies;
   const defaultSpecies = knownAvailableSpecies === null
     ? idealSpecies
     : Math.min(idealSpecies, knownAvailableSpecies);

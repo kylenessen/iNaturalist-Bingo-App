@@ -21,6 +21,15 @@ test("defaults to a three to one pool for normal grids", () => {
   assert.equal(settings.getSpeciesPoolSettings({ gridSize: 9 }).value, 243);
 });
 
+test("keeps the fallback slider default one third along the track", () => {
+  for (const gridSize of [3, 5, 7, 9]) {
+    const pool = settings.getSpeciesPoolSettings({ gridSize });
+    const progress = (pool.value - pool.min) / (pool.max - pool.min);
+
+    assert.equal(progress, 1 / 3);
+  }
+});
+
 test("caps the default at the available species count", () => {
   const pool = settings.getSpeciesPoolSettings({
     gridSize: 9,
