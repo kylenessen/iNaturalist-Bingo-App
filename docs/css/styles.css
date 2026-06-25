@@ -69,9 +69,51 @@ legend {
   padding: 0;
 }
 
+.species-pool-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.species-pool-controls input[type="number"] {
+  text-align: right;
+}
+
 .field small {
+  display: block;
   color: #666;
   font-size: 0.8rem;
+}
+
+.field-warning {
+  margin-top: 0.35rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8a900;
+  border-radius: 6px;
+  background: #fff5c2;
+  color: #5d4200;
+  font-weight: 600;
+}
+
+.field-warning::before {
+  content: "!";
+  display: inline-flex;
+  flex: 0 0 1.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.05rem;
+  border-radius: 50%;
+  background: #d8a900;
+  color: #3d2a00;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 /* Checkboxes inside labels */
@@ -337,6 +379,8 @@ legend {
   .container { margin: 1rem auto; }
   h1 { font-size: 1.4rem; }
   fieldset { padding: 0.75rem; }
+  .species-pool-controls { grid-template-columns: 1fr; }
+  .species-pool-controls input[type="number"] { text-align: left; }
   .bingo-cell .common-name { font-size: 0.6em; }
   .bingo-cell .sci-name { font-size: 0.55em; }
 }

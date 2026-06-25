@@ -59,8 +59,13 @@
         </div>
 
         <div class="field">
-          <label for="top-n">Species pool size (Top-N): <span id="top-n-value">25</span></label>
-          <input type="range" id="top-n" min="10" max="100" value="25" step="5">
+          <label for="top-n">Species pool size <span id="top-n-value">75</span></label>
+          <div class="species-pool-controls">
+            <input type="range" id="top-n" min="25" max="100" value="75" step="1">
+            <input type="number" id="top-n-input" min="25" max="100" value="75" step="1">
+          </div>
+          <small id="top-n-bounds">25 minimum</small>
+          <small id="top-n-warning" class="field-warning hidden" role="status" aria-live="polite"></small>
         </div>
 
         <div class="field">

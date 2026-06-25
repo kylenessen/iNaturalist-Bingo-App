@@ -3,10 +3,15 @@
  * Wires up events, manages state, renders bingo card previews.
  */
 
-import { searchPlaces, fetchTopSpecies } from "./api.js";
+import { searchPlaces, fetchSpeciesPool } from "./api.js";
 import { generateCards } from "./bingo.js";
 import { generatePdf } from "./pdf.js";
 import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
+import {
+  RARE_OBSERVATION_THRESHOLD,
+  getRarelyObservedCutoff,
+  getSpeciesPoolSettings,
+} from "./species-settings.js";
 
 // ---- State ----
 const state = {
@@ -16,6 +21,9 @@ const state = {
   cards: [],       // Array of grids
   gridSize: 5,
   currentCard: 0,
+  speciesAvailability: null,
+  speciesSettingsRequestId: 0,
+  rareWarningRequestId: 0,
   options: { photoOn: true, commonOn: true, sciOn: true },
 };
 
@@ -34,6 +42,9 @@ const monthCheckboxes = $("#month-checkboxes");
 const gridSizeSelect = $("#grid-size");
 const topNSlider = $("#top-n");
 const topNValue = $("#top-n-value");
+const topNInput = $("#top-n-input");
+const topNBounds = $("#top-n-bounds");
+const topNWarning = $("#top-n-warning");
 const numCardsInput = $("#num-cards");
 const seedInput = $("#seed");
 const freeSquareCheck = $("#free-square");
@@ -92,6 +103,231 @@ function debounce(fn, ms) {
     timer = setTimeout(() => fn(...args), ms);
   };
 }
+
+function getSelectedFilters() {
+  let selectedMonths = null;
+  if (monthEnabled.checked) {
+    selectedMonths = Array.from(monthCheckboxes.querySelectorAll("input:checked")).map(
+      (cb) => Number(cb.value)
+    );
+    if (selectedMonths.length === 0) selectedMonths = null;
+  }
+
+  let selectedIconicTaxa = null;
+  if (taxaEnabled.checked) {
+    selectedIconicTaxa = Array.from(taxaCheckboxes.querySelectorAll("input:checked")).map(
+      (cb) => cb.value
+    );
+    if (selectedIconicTaxa.length === 0) selectedIconicTaxa = null;
+  }
+
+  return { selectedMonths, selectedIconicTaxa };
+}
+
+function getCurrentSpeciesPoolSettings(value = null) {
+  return getSpeciesPoolSettings({
+    gridSize: Number(gridSizeSelect.value),
+    freeSquare: freeSquareCheck.checked,
+    availableSpecies: state.speciesAvailability?.totalAvailable ?? null,
+    value,
+  });
+}
+
+function setTopNWarning(message) {
+  topNWarning.textContent = message;
+  topNWarning.classList.remove("hidden");
+}
+
+function hideTopNWarning() {
+  topNWarning.textContent = "";
+  topNWarning.classList.add("hidden");
+}
+
+function renderSpeciesPoolBounds(settings) {
+  if (!settings.hasEnoughSpecies) {
+    topNBounds.textContent =
+      `${settings.availableSpecies} species observed. ` +
+      `${settings.requiredSpecies} needed for this card.`;
+    return;
+  }
+
+  if (settings.availableSpecies === null) {
+    topNBounds.textContent = `${settings.min} minimum`;
+    return;
+  }
+
+  topNBounds.textContent = `${settings.min} to ${settings.max} species available`;
+}
+
+function renderRareSpeciesWarning(species, value) {
+  const cutoff = getRarelyObservedCutoff(species, value);
+
+  if (!cutoff) {
+    hideTopNWarning();
+    return;
+  }
+
+  setTopNWarning(
+    `This pool reaches species with fewer than ` +
+    `${RARE_OBSERVATION_THRESHOLD} observations here. ` +
+    `The last included species has ` +
+    `${formatObservationCount(cutoff.observationCount)}.`
+  );
+}
+
+function formatObservationCount(count) {
+  return count === 1 ? "1 observation" : `${count} observations`;
+}
+
+function getEffectiveAvailableSpecies(speciesPool, requestedCount) {
+  const reportedTotal = Number(speciesPool.totalAvailable || 0);
+  const fetchedTotal = speciesPool.species.length;
+
+  if (requestedCount >= reportedTotal && fetchedTotal < reportedTotal) {
+    return fetchedTotal;
+  }
+
+  return reportedTotal;
+}
+
+function syncSpeciesPoolControls(value = null, options = {}) {
+  const { checkRare = true } = options;
+  const settings = getCurrentSpeciesPoolSettings(value);
+  const controlValue = String(settings.value);
+  const min = String(settings.min);
+  const max = String(settings.max);
+
+  topNSlider.min = min;
+  topNSlider.max = max;
+  topNSlider.step = "1";
+  topNSlider.disabled = !settings.hasEnoughSpecies;
+  topNSlider.value = controlValue;
+
+  topNInput.min = min;
+  topNInput.max = max;
+  topNInput.step = "1";
+  topNInput.disabled = !settings.hasEnoughSpecies;
+  topNInput.value = controlValue;
+
+  topNValue.textContent = controlValue;
+  renderSpeciesPoolBounds(settings);
+
+  if (!settings.hasEnoughSpecies) {
+    setTopNWarning(
+      `Choose a smaller grid or broader filters. ` +
+      `This card needs ${settings.requiredSpecies} species.`
+    );
+  } else if (!state.placeId) {
+    hideTopNWarning();
+  } else if (checkRare) {
+    debouncedRefreshRareSpeciesWarning();
+  }
+
+  return settings;
+}
+
+async function refreshRareSpeciesWarning() {
+  const settings = getCurrentSpeciesPoolSettings(topNInput.value);
+
+  if (!state.placeId || !settings.hasEnoughSpecies) {
+    return;
+  }
+
+  const requestId = ++state.rareWarningRequestId;
+  const { selectedMonths, selectedIconicTaxa } = getSelectedFilters();
+
+  try {
+    const speciesPool = await fetchSpeciesPool(
+      state.placeId,
+      settings.value,
+      selectedMonths,
+      selectedIconicTaxa
+    );
+    const species = speciesPool.species;
+
+    if (requestId !== state.rareWarningRequestId) return;
+
+    const effectiveAvailableSpecies = getEffectiveAvailableSpecies(
+      speciesPool,
+      settings.value
+    );
+    if (effectiveAvailableSpecies !== state.speciesAvailability?.totalAvailable) {
+      state.speciesAvailability = { totalAvailable: effectiveAvailableSpecies };
+      const updatedSettings = syncSpeciesPoolControls(settings.value, {
+        checkRare: false,
+      });
+      renderRareSpeciesWarning(species, updatedSettings.value);
+      return;
+    }
+
+    renderRareSpeciesWarning(species, settings.value);
+  } catch {
+    if (requestId === state.rareWarningRequestId) hideTopNWarning();
+  }
+}
+
+const debouncedRefreshRareSpeciesWarning = debounce(
+  refreshRareSpeciesWarning,
+  DEBOUNCE_MS
+);
+
+async function refreshSpeciesAvailability(options = {}) {
+  const { resetToDefault = true } = options;
+  state.rareWarningRequestId += 1;
+  hideTopNWarning();
+
+  if (!state.placeId) {
+    state.speciesAvailability = null;
+    syncSpeciesPoolControls(resetToDefault ? null : topNInput.value, {
+      checkRare: false,
+    });
+    return;
+  }
+
+  const requestId = ++state.speciesSettingsRequestId;
+  const { selectedMonths, selectedIconicTaxa } = getSelectedFilters();
+  const defaultSettings = getSpeciesPoolSettings({
+    gridSize: Number(gridSizeSelect.value),
+    freeSquare: freeSquareCheck.checked,
+  });
+
+  topNBounds.textContent = "Checking available species...";
+
+  try {
+    const pool = await fetchSpeciesPool(
+      state.placeId,
+      defaultSettings.defaultSpecies,
+      selectedMonths,
+      selectedIconicTaxa
+    );
+
+    if (requestId !== state.speciesSettingsRequestId) return;
+
+    state.speciesAvailability = { totalAvailable: pool.totalAvailable };
+    const settings = syncSpeciesPoolControls(
+      resetToDefault ? null : topNInput.value,
+      { checkRare: false }
+    );
+
+    if (settings.hasEnoughSpecies) {
+      renderRareSpeciesWarning(pool.species, settings.value);
+    }
+  } catch {
+    if (requestId !== state.speciesSettingsRequestId) return;
+
+    state.speciesAvailability = null;
+    syncSpeciesPoolControls(resetToDefault ? null : topNInput.value, {
+      checkRare: false,
+    });
+    topNBounds.textContent = "Could not check available species";
+    hideTopNWarning();
+  }
+}
+
+const debouncedRefreshSpeciesAvailability = debounce(
+  () => refreshSpeciesAvailability({ resetToDefault: true }),
+  DEBOUNCE_MS
+);
 
 // ---- Populate filter checkboxes ----
 function initFilters() {
@@ -171,7 +407,20 @@ function selectPlace(place) {
   if (state.cards.length === 0) {
     setDocTitleDefault(place.displayName);
   }
+
+  refreshSpeciesAvailability({ resetToDefault: true });
 }
+
+placeInput.addEventListener("input", (e) => {
+  if (!state.placeId || e.target.value === state.placeName) return;
+
+  state.placeId = null;
+  state.placeName = "";
+  state.speciesAvailability = null;
+  placeIdInput.value = "";
+  placeDisplay.textContent = "";
+  syncSpeciesPoolControls(null, { checkRare: false });
+});
 
 placeInput.addEventListener("input", debounce((e) => handlePlaceInput(e.target.value), DEBOUNCE_MS));
 
@@ -207,15 +456,48 @@ placeInput.addEventListener("blur", () => {
 // ---- Filter toggles ----
 taxaEnabled.addEventListener("change", () => {
   taxaWrapper.classList.toggle("hidden", !taxaEnabled.checked);
+  debouncedRefreshSpeciesAvailability();
 });
 
 monthEnabled.addEventListener("change", () => {
   monthWrapper.classList.toggle("hidden", !monthEnabled.checked);
+  debouncedRefreshSpeciesAvailability();
 });
 
-// ---- Slider value display ----
+taxaCheckboxes.addEventListener("change", debouncedRefreshSpeciesAvailability);
+monthCheckboxes.addEventListener("change", debouncedRefreshSpeciesAvailability);
+
+// ---- Species pool controls ----
 topNSlider.addEventListener("input", () => {
-  topNValue.textContent = topNSlider.value;
+  syncSpeciesPoolControls(topNSlider.value);
+});
+
+topNInput.addEventListener("input", () => {
+  if (topNInput.value === "") return;
+
+  const rawValue = Number(topNInput.value);
+  if (!Number.isFinite(rawValue)) return;
+
+  const settings = getCurrentSpeciesPoolSettings(rawValue);
+  const roundedValue = String(Math.round(rawValue));
+  topNValue.textContent = roundedValue;
+
+  if (rawValue >= settings.min && rawValue <= settings.max) {
+    topNSlider.value = roundedValue;
+    debouncedRefreshRareSpeciesWarning();
+  }
+});
+
+topNInput.addEventListener("change", () => {
+  syncSpeciesPoolControls(topNInput.value);
+});
+
+gridSizeSelect.addEventListener("change", () => {
+  syncSpeciesPoolControls(null);
+});
+
+freeSquareCheck.addEventListener("change", () => {
+  syncSpeciesPoolControls(null);
 });
 
 // ---- Display toggle handlers (re-render preview) ----
@@ -332,28 +614,15 @@ form.addEventListener("submit", async (e) => {
   }
 
   const gridSize = Number(gridSizeSelect.value);
-  const topN = Number(topNSlider.value);
+  const requestedSpeciesSettings = syncSpeciesPoolControls(topNInput.value, {
+    checkRare: false,
+  });
+  const topN = requestedSpeciesSettings.value;
   const numCards = Number(numCardsInput.value);
   const seedVal = Number(seedInput.value);
   const baseSeed = seedVal !== 0 ? seedVal : null;
   const freeSquare = freeSquareCheck.checked;
-
-  // Gather filters
-  let selectedMonths = null;
-  if (monthEnabled.checked) {
-    selectedMonths = Array.from(monthCheckboxes.querySelectorAll("input:checked")).map(
-      (cb) => Number(cb.value)
-    );
-    if (selectedMonths.length === 0) selectedMonths = null;
-  }
-
-  let selectedIconicTaxa = null;
-  if (taxaEnabled.checked) {
-    selectedIconicTaxa = Array.from(taxaCheckboxes.querySelectorAll("input:checked")).map(
-      (cb) => cb.value
-    );
-    if (selectedIconicTaxa.length === 0) selectedIconicTaxa = null;
-  }
+  const { selectedMonths, selectedIconicTaxa } = getSelectedFilters();
 
   // Disable button during generation
   generateBtn.disabled = true;
@@ -363,7 +632,19 @@ form.addEventListener("submit", async (e) => {
   try {
     showStatus("Fetching species list from iNaturalist…");
 
-    const species = await fetchTopSpecies(placeId, topN, selectedMonths, selectedIconicTaxa);
+    const speciesPool = await fetchSpeciesPool(
+      placeId,
+      topN,
+      selectedMonths,
+      selectedIconicTaxa
+    );
+    const species = speciesPool.species;
+    state.speciesAvailability = {
+      totalAvailable: getEffectiveAvailableSpecies(speciesPool, topN),
+    };
+    const availableSpeciesSettings = syncSpeciesPoolControls(topN, {
+      checkRare: false,
+    });
 
     if (!species || species.length === 0) {
       showError("No species found for this place with the selected filters.");
@@ -373,14 +654,22 @@ form.addEventListener("submit", async (e) => {
     const cellsNeeded = gridSize * gridSize - (freeSquare ? 1 : 0);
     if (species.length < cellsNeeded) {
       showError(
-        `Not enough species (${species.length}) to fill a ${gridSize}×${gridSize} card ` +
-        `(need ${cellsNeeded}). Try increasing the species pool size or using a smaller grid.`
+        `This place has ${species.length} species with the selected filters. ` +
+        `A ${gridSize}×${gridSize} card needs ${cellsNeeded}.`
       );
       return;
     }
 
+    renderRareSpeciesWarning(species, availableSpeciesSettings.value);
+
     showStatus("Generating bingo cards…");
-    const cards = generateCards(species, numCards, gridSize, freeSquare, baseSeed);
+    const cards = generateCards(
+      species.slice(0, availableSpeciesSettings.value),
+      numCards,
+      gridSize,
+      freeSquare,
+      baseSeed
+    );
 
     state.cards = cards;
     state.gridSize = gridSize;
@@ -441,3 +730,4 @@ downloadBtn.addEventListener("click", async () => {
 
 // ---- Init ----
 initFilters();
+syncSpeciesPoolControls(null, { checkRare: false });
