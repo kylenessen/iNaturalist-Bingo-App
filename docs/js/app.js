@@ -195,8 +195,8 @@ function renderRareSpeciesWarning(species, value) {
   }
 
   setTopNWarning(
-    `This pool reaches species with fewer than ` +
-    `${RARE_OBSERVATION_THRESHOLD} observations here.`
+    `Species with fewer than ${RARE_OBSERVATION_THRESHOLD} observations ` +
+    `are included as bingo card options, which may difficult to find in the field.`
   );
 }
 
