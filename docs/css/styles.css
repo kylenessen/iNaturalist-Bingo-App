@@ -3,24 +3,22 @@
    ============================================================ */
 
 :root {
-  --page-bg: #eef5f2;
-  --surface: #fffdf8;
+  --title-font: "Bitcount Prop Single", "Google Sans Flex", system-ui, sans-serif;
+  --body-font: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --page-bg: #eef3ef;
+  --surface: #fbfcfa;
   --surface-strong: #ffffff;
-  --surface-muted: #eff6f2;
-  --ink: #1f2d27;
-  --muted: #637269;
-  --border: #c9d8cf;
-  --border-strong: #9fb9aa;
-  --brand: #2f6f55;
-  --brand-dark: #214f3d;
-  --brand-soft: #dfeee6;
-  --accent: #b65f3b;
-  --accent-soft: #f8e7d8;
-  --blue: #2f6f91;
-  --blue-dark: #214f68;
-  --danger: #b43337;
-  --warning: #a66f16;
-  --shadow: 0 18px 55px rgba(31, 45, 39, 0.1);
+  --surface-muted: #f3f7f4;
+  --ink: #17221d;
+  --muted: #65746b;
+  --border: #cbd8d0;
+  --border-strong: #93a79c;
+  --brand: #315f4c;
+  --brand-dark: #17362b;
+  --brand-soft: #e1ebe6;
+  --danger: #40584d;
+  --warning: #53665c;
+  --shadow: 0 18px 48px rgba(23, 34, 29, 0.1);
 }
 
 /* --- Reset and Base --- */
@@ -32,10 +30,8 @@ html {
 
 body {
   min-height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background:
-    linear-gradient(180deg, rgba(47, 111, 85, 0.13) 0, rgba(47, 111, 85, 0) 18rem),
-    linear-gradient(135deg, #eef5f2 0%, #f8f6ef 52%, #edf4f7 100%);
+  font-family: var(--body-font);
+  background: var(--page-bg);
   color: var(--ink);
   line-height: 1.5;
 }
@@ -53,21 +49,12 @@ body {
 }
 
 h1 {
+  font-family: var(--title-font);
   color: var(--ink);
-  font-size: 2.35rem;
-  font-weight: 800;
+  font-size: 3rem;
+  font-weight: 300;
   letter-spacing: 0;
-  line-height: 1.05;
-}
-
-h1::after {
-  content: "";
-  display: block;
-  width: 5.5rem;
-  height: 0.28rem;
-  margin-top: 0.75rem;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand), var(--accent), var(--blue));
+  line-height: 0.95;
 }
 
 h2 {
@@ -86,18 +73,25 @@ form {
 fieldset {
   border: 1px solid rgba(159, 185, 170, 0.75);
   border-radius: 8px;
-  padding: 1.25rem;
-  background: rgba(255, 253, 248, 0.9);
+  padding: 1.1rem 1.25rem 1.25rem;
+  background: rgba(251, 252, 250, 0.92);
   box-shadow: var(--shadow);
 }
 
 legend {
-  padding: 0 0.45rem;
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1rem;
   color: var(--brand-dark);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+legend + * {
+  clear: both;
 }
 
 .field {
@@ -140,7 +134,7 @@ legend {
   outline: none;
   border-color: var(--brand);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.15);
+  box-shadow: 0 0 0 3px rgba(49, 95, 76, 0.15);
 }
 
 .field input[type="range"] {
@@ -172,10 +166,10 @@ legend {
   gap: 0.5rem;
   align-items: flex-start;
   padding: 0.65rem 0.75rem;
-  border: 1px solid rgba(166, 111, 22, 0.45);
+  border: 1px solid rgba(83, 102, 92, 0.38);
   border-radius: 6px;
-  background: #fff5cf;
-  color: #5c3c08;
+  background: #eef3ef;
+  color: var(--brand-dark);
   font-weight: 600;
 }
 
@@ -190,7 +184,7 @@ legend {
   margin-top: 0.05rem;
   border-radius: 50%;
   background: var(--warning);
-  color: #fff8df;
+  color: var(--surface);
   font-size: 0.85rem;
   font-weight: 800;
   line-height: 1;
@@ -199,9 +193,7 @@ legend {
 /* Filter controls */
 .filter-fieldset {
   border-color: rgba(159, 185, 170, 0.95);
-  background:
-    linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(239, 246, 242, 0.96)),
-    var(--surface);
+  background: var(--surface);
 }
 
 .filter-option-grid {
@@ -221,9 +213,9 @@ legend {
 }
 
 .filter-option:has(.filter-toggle input:checked) {
-  border-color: rgba(47, 111, 85, 0.6);
+  border-color: rgba(49, 95, 76, 0.62);
   background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 26px rgba(31, 45, 39, 0.08);
+  box-shadow: 0 10px 26px rgba(23, 34, 29, 0.08);
 }
 
 .filter-toggle {
@@ -266,7 +258,7 @@ legend {
   height: 1.02rem;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 2px 5px rgba(31, 45, 39, 0.24);
+  box-shadow: 0 2px 5px rgba(23, 34, 29, 0.24);
   transition: transform 0.16s ease;
 }
 
@@ -280,7 +272,7 @@ legend {
 }
 
 .filter-toggle:focus-within .toggle-track {
-  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.18);
+  box-shadow: 0 0 0 3px rgba(49, 95, 76, 0.18);
 }
 
 .multi-select-wrapper {
@@ -313,7 +305,7 @@ legend {
   border: 1px solid var(--border);
   border-radius: 7px;
   background: var(--surface-strong);
-  color: #3f5047;
+  color: #3f5048;
   cursor: pointer;
   font-size: 0.86rem;
   font-weight: 700;
@@ -329,7 +321,7 @@ legend {
 
 .checkbox-chip:focus-within {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(47, 111, 85, 0.15);
+  box-shadow: 0 0 0 3px rgba(49, 95, 76, 0.15);
 }
 
 .checkbox-chip input {
@@ -366,7 +358,7 @@ legend {
 }
 
 .checkbox-chip:has(input:checked) {
-  border-color: rgba(47, 111, 85, 0.72);
+  border-color: rgba(49, 95, 76, 0.72);
   background: var(--brand-soft);
   color: var(--brand-dark);
 }
@@ -444,24 +436,38 @@ legend {
 .place-map-panel summary {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
+  gap: 0.6rem;
   align-items: center;
   min-height: 2.6rem;
   padding: 0.6rem 0.75rem;
   color: var(--brand-dark);
   cursor: pointer;
   font-weight: 700;
+  list-style: none;
 }
 
-.place-map-title {
-  min-width: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 500;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.place-map-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.place-map-panel summary::before {
+  content: ">";
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--brand-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.place-map-panel[open] summary::before {
+  background: var(--brand-soft);
+  transform: rotate(90deg);
 }
 
 .place-map-body {
@@ -504,6 +510,10 @@ legend {
   margin-top: 0.45rem;
 }
 
+.place-map-status:empty {
+  display: none;
+}
+
 .leaflet-container {
   font: inherit;
 }
@@ -521,16 +531,16 @@ legend {
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  background: var(--brand-dark);
   border: none;
   border-radius: 7px;
-  box-shadow: 0 12px 22px rgba(33, 79, 61, 0.2);
+  box-shadow: 0 12px 22px rgba(23, 54, 43, 0.2);
   cursor: pointer;
   transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
 }
 
 #generate-btn:hover {
-  box-shadow: 0 15px 26px rgba(33, 79, 61, 0.28);
+  box-shadow: 0 15px 26px rgba(23, 54, 43, 0.28);
   filter: brightness(1.04);
   transform: translateY(-1px);
 }
@@ -552,7 +562,7 @@ legend {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  background: var(--brand);
   border: none;
   border-radius: 7px;
   cursor: pointer;
@@ -586,9 +596,9 @@ legend {
 }
 
 .error {
-  background: #fde9e3;
+  background: #e8eee9;
   color: var(--danger);
-  border: 1px solid rgba(180, 51, 55, 0.28);
+  border: 1px solid rgba(64, 88, 77, 0.3);
 }
 
 /* --- Preview Navigation --- */
@@ -680,14 +690,7 @@ legend {
 
 /* Loading skeleton */
 .bingo-cell img.loading {
-  background: linear-gradient(90deg, #eef3ef 25%, #dde8e1 50%, #eef3ef 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  background: #e4ece7;
 }
 
 /* --- PDF Render Area (off-screen) --- */
@@ -733,7 +736,7 @@ legend {
   }
 
   h1 {
-    font-size: 1.9rem;
+    font-size: 2.25rem;
   }
 
   fieldset {
@@ -747,7 +750,7 @@ legend {
 
 @media (max-width: 600px) {
   .container { padding: 1rem 0.85rem 2rem; }
-  h1 { font-size: 1.65rem; }
+  h1 { font-size: 2rem; }
   .species-pool-controls { grid-template-columns: 1fr; }
   .species-pool-controls input[type="number"] { text-align: left; }
   .checkbox-group { grid-template-columns: 1fr; }
@@ -756,12 +759,7 @@ legend {
     gap: 0.65rem;
   }
   .place-map-panel summary {
-    grid-template-columns: 1fr;
-    gap: 0.15rem;
-  }
-  .place-map-title {
-    text-align: left;
-    white-space: normal;
+    grid-template-columns: auto minmax(0, 1fr);
   }
   .place-map {
     height: 280px;

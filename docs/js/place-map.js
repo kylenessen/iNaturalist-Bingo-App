@@ -8,8 +8,8 @@ const FIT_PADDING = [24, 24];
 const MAX_FIT_ZOOM = 16;
 
 const BOUNDARY_STYLE = {
-  color: "#0b6b3a",
-  fillColor: "#35b779",
+  color: "#315f4c",
+  fillColor: "#315f4c",
   fillOpacity: 0.18,
   opacity: 1,
   weight: 3,
@@ -25,7 +25,6 @@ export function hasBoundaryGeometry(place) {
 export function initPlaceMap({
   panelEl,
   mapEl,
-  titleEl,
   statusEl,
   fitButton,
 }) {
@@ -101,13 +100,12 @@ export function initPlaceMap({
     currentBounds = boundaryLayer.getBounds();
     fitBoundary();
     refreshSize();
-    statusEl.textContent = geometryFeature ? "Boundary loaded." : "Bounding box loaded.";
+    statusEl.textContent = "";
     return true;
   }
 
   function clear() {
     clearBoundary();
-    titleEl.textContent = "";
     statusEl.textContent = "";
     panelEl.open = false;
     panelEl.classList.add("hidden");
@@ -131,7 +129,6 @@ export function initPlaceMap({
   }
 
   function showPanel(place, status) {
-    titleEl.textContent = place?.displayName || `Place ${place?.id || ""}`.trim();
     statusEl.textContent = status;
     panelEl.classList.remove("hidden");
     panelEl.open = true;

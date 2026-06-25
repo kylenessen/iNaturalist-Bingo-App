@@ -38,7 +38,6 @@ const placeIdInput = $("#place-id");
 const placeDisplay = $("#place-display");
 const placeMapPanel = $("#place-map-panel");
 const placeMapEl = $("#place-map");
-const placeMapTitle = $("#place-map-title");
 const placeMapStatus = $("#place-map-status");
 const placeMapFit = $("#place-map-fit");
 const taxaEnabled = $("#taxa-filter-enabled");
@@ -73,7 +72,6 @@ const downloadBtn = $("#download-pdf");
 const placeMap = initPlaceMap({
   panelEl: placeMapPanel,
   mapEl: placeMapEl,
-  titleEl: placeMapTitle,
   statusEl: placeMapStatus,
   fitButton: placeMapFit,
 });
