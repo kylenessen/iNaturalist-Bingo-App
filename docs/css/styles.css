@@ -163,7 +163,7 @@ legend + * {
   margin-bottom: 0;
 }
 
-.field label:not(.filter-toggle):not(.inline-check):not(.checkbox-chip):not(.grid-size-option),
+.field label:not(.filter-toggle):not(.inline-check):not(.checkbox-chip):not(.grid-size-option):not(.species-pool-label-text),
 .field-label {
   display: block;
   color: var(--ink);
@@ -257,6 +257,26 @@ legend + * {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.species-pool-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.species-pool-label-text {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 620;
+}
+
+.species-pool-info-toggle {
+  margin-top: 0;
+}
+
+.species-pool-info-blurb {
+  margin-bottom: 0.8rem;
 }
 
 .species-pool-controls {

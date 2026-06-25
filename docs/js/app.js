@@ -34,6 +34,8 @@ const state = {
 const $ = (sel) => document.querySelector(sel);
 const appInfoToggle = $("#app-info-toggle");
 const appInfoBlurb = $("#app-info-blurb");
+const speciesPoolInfoToggle = $("#species-pool-info-toggle");
+const speciesPoolInfoBlurb = $("#species-pool-info-blurb");
 const placeInput = $("#place-input");
 const placeDropdown = $("#place-dropdown");
 const placeIdInput = $("#place-id");
@@ -49,7 +51,6 @@ const monthWrapper = $("#month-select-wrapper");
 const monthCheckboxes = $("#month-checkboxes");
 const gridSizeControl = $("#grid-size");
 const topNSlider = $("#top-n");
-const topNValue = $("#top-n-value");
 const topNInput = $("#top-n-input");
 const topNBounds = $("#top-n-bounds");
 const topNWarning = $("#top-n-warning");
@@ -94,11 +95,16 @@ function hideMessages() {
   errorEl.classList.add("hidden");
 }
 
-appInfoToggle.addEventListener("click", () => {
-  const isExpanded = appInfoToggle.getAttribute("aria-expanded") === "true";
+function toggleInfoBlurb(toggle, blurb) {
+  const isExpanded = toggle.getAttribute("aria-expanded") === "true";
 
-  appInfoToggle.setAttribute("aria-expanded", String(!isExpanded));
-  appInfoBlurb.classList.toggle("hidden", isExpanded);
+  toggle.setAttribute("aria-expanded", String(!isExpanded));
+  blurb.classList.toggle("hidden", isExpanded);
+}
+
+appInfoToggle.addEventListener("click", () => toggleInfoBlurb(appInfoToggle, appInfoBlurb));
+speciesPoolInfoToggle.addEventListener("click", () => {
+  toggleInfoBlurb(speciesPoolInfoToggle, speciesPoolInfoBlurb);
 });
 
 let docTitleDefault = docTitleInput.value;
@@ -240,7 +246,6 @@ function syncSpeciesPoolControls(value = null, options = {}) {
   topNInput.disabled = !settings.hasEnoughSpecies;
   topNInput.value = controlValue;
 
-  topNValue.textContent = controlValue;
   renderSpeciesPoolBounds(settings);
 
   if (!settings.hasEnoughSpecies) {
@@ -558,7 +563,6 @@ topNInput.addEventListener("input", () => {
 
   const settings = getCurrentSpeciesPoolSettings(rawValue);
   const roundedValue = String(Math.round(rawValue));
-  topNValue.textContent = roundedValue;
 
   if (rawValue >= settings.min && rawValue <= settings.max) {
     topNSlider.value = roundedValue;

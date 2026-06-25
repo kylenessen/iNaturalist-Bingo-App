@@ -161,7 +161,26 @@
         </div>
 
         <div class="field species-pool-field">
-          <label for="top-n">Species pool size <span id="top-n-value">75</span></label>
+          <div class="field-label species-pool-label-row">
+            <label for="top-n" class="species-pool-label-text">Species pool size</label>
+            <button
+              type="button"
+              id="species-pool-info-toggle"
+              class="app-info-toggle species-pool-info-toggle"
+              aria-label="About species pool size"
+              aria-expanded="false"
+              aria-controls="species-pool-info-blurb"
+            >?</button>
+          </div>
+          <div id="species-pool-info-blurb" class="app-info-blurb species-pool-info-blurb hidden">
+            <p>
+              Species pool size is the number of species your bingo cards draw from
+              after the place boundary and filters are applied. For the selected
+              iNaturalist boundary, the app requests observed species counts sorted
+              from most observations to fewest. If the pool size is 75, each card is
+              generated from the 75 most frequently observed species in that boundary.
+            </p>
+          </div>
           <div class="species-pool-controls">
             <input type="range" id="top-n" min="25" max="100" value="75" step="1">
             <input type="number" id="top-n-input" min="25" max="100" value="75" step="1">
