@@ -7,6 +7,7 @@ import { API_BASE, SPECIES_RANK_LEVELS } from "./config.js";
 
 // In-memory cache keyed on request params
 const cache = new Map();
+const placeCache = new Map();
 const MAX_SPECIES_PAGE_SIZE = 500;
 
 function buildFilterKeys(selectedMonths, selectedIconicTaxa) {
@@ -53,7 +54,7 @@ function getTotalResults(data) {
 
 /**
  * Search places via iNaturalist autocomplete endpoint.
- * Returns an array of { id, displayName } objects.
+ * Returns place results with display names and boundary geometry when available.
  */
 export async function searchPlaces(query) {
   if (!query || query.trim().length < 2) return [];
@@ -63,10 +64,43 @@ export async function searchPlaces(query) {
   if (!resp.ok) throw new Error(`Place search failed: ${resp.status}`);
 
   const data = await resp.json();
-  return (data.results || []).map((r) => ({
+  return (data.results || []).map(formatPlace);
+}
+
+/**
+ * Fetch place details by ID. Used when a numeric ID is entered directly or a
+ * search result does not include geometry.
+ */
+export async function fetchPlaceDetails(placeId) {
+  const id = Number(placeId);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid place ID");
+  }
+
+  if (placeCache.has(id)) return placeCache.get(id);
+
+  const url = `${API_BASE}/places/${id}`;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Place fetch failed: ${resp.status}`);
+
+  const data = await resp.json();
+  const result = data.results?.[0];
+  if (!result) throw new Error("Place not found");
+
+  const place = formatPlace(result);
+  placeCache.set(id, place);
+  return place;
+}
+
+function formatPlace(r) {
+  return {
     id: r.id,
     displayName: r.display_name || r.name,
-  }));
+    geometryGeojson: r.geometry_geojson || null,
+    boundingBoxGeojson: r.bounding_box_geojson || null,
+    location: r.location || null,
+    bboxArea: r.bbox_area ?? null,
+  };
 }
 
 /**

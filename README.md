@@ -17,6 +17,7 @@ a migration notice that points users to the static app.
 - Grid sizes of 3x3, 5x5, 7x7, and 9x9.
 - Optional photos, common names, scientific names, and center FREE square.
 - Category and month filters for focused field trips.
+- Collapsible place boundary preview with map and aerial basemaps.
 - Client-side PDF generation with `html2canvas` and `jsPDF`.
 - No API keys and no backend server.
 
@@ -51,6 +52,7 @@ https://kylenessen.github.io/iNaturalist-Bingo-App/
 - `docs/css/styles.css` contains app and PDF capture styles.
 - `docs/js/app.js` wires the UI together.
 - `docs/js/api.js` talks to the iNaturalist API.
+- `docs/js/place-map.js` renders selected place boundaries with Leaflet.
 - `docs/js/species-settings.js` calculates species pool defaults and warnings.
 - `docs/js/bingo.js` builds deterministic bingo grids.
 - `docs/js/pdf.js` renders PDF pages in the browser.

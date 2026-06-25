@@ -3,9 +3,10 @@
  * Wires up events, manages state, renders bingo card previews.
  */
 
-import { searchPlaces, fetchSpeciesPool } from "./api.js";
+import { searchPlaces, fetchSpeciesPool, fetchPlaceDetails } from "./api.js";
 import { generateCards } from "./bingo.js";
 import { generatePdf } from "./pdf.js";
+import { hasBoundaryGeometry, initPlaceMap } from "./place-map.js";
 import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
 import {
   RARE_OBSERVATION_THRESHOLD,
@@ -24,6 +25,8 @@ const state = {
   speciesAvailability: null,
   speciesSettingsRequestId: 0,
   rareWarningRequestId: 0,
+  placeBoundaryRequestId: 0,
+  selectedPlace: null,
   options: { photoOn: true, commonOn: true, sciOn: true },
 };
 
@@ -33,6 +36,11 @@ const placeInput = $("#place-input");
 const placeDropdown = $("#place-dropdown");
 const placeIdInput = $("#place-id");
 const placeDisplay = $("#place-display");
+const placeMapPanel = $("#place-map-panel");
+const placeMapEl = $("#place-map");
+const placeMapTitle = $("#place-map-title");
+const placeMapStatus = $("#place-map-status");
+const placeMapFit = $("#place-map-fit");
 const taxaEnabled = $("#taxa-filter-enabled");
 const taxaWrapper = $("#taxa-select-wrapper");
 const taxaCheckboxes = $("#taxa-checkboxes");
@@ -62,6 +70,13 @@ const prevBtn = $("#prev-card");
 const nextBtn = $("#next-card");
 const cardCounter = $("#card-counter");
 const downloadBtn = $("#download-pdf");
+const placeMap = initPlaceMap({
+  panelEl: placeMapPanel,
+  mapEl: placeMapEl,
+  titleEl: placeMapTitle,
+  statusEl: placeMapStatus,
+  fitButton: placeMapFit,
+});
 
 // ---- Helpers ----
 function showStatus(msg) {
@@ -358,6 +373,49 @@ function initFilters() {
 
 // ---- Place Type-Ahead ----
 let dropdownIndex = -1;
+let dropdownPlaces = [];
+
+function setSelectedPlace(place) {
+  state.placeId = place.id;
+  state.placeName = place.displayName;
+  state.selectedPlace = place;
+  placeInput.value = place.displayName;
+  placeIdInput.value = place.id;
+  placeDisplay.textContent = `Place ID: ${place.id}`;
+}
+
+function clearSelectedPlace() {
+  state.placeId = null;
+  state.placeName = "";
+  state.selectedPlace = null;
+  state.speciesAvailability = null;
+  state.placeBoundaryRequestId += 1;
+  placeIdInput.value = "";
+  placeDisplay.textContent = "";
+  placeMap.clear();
+}
+
+async function refreshPlaceBoundaryPreview(place) {
+  const requestId = ++state.placeBoundaryRequestId;
+  let previewPlace = place;
+
+  placeMap.showLoading(previewPlace);
+
+  try {
+    if (!hasBoundaryGeometry(previewPlace)) {
+      previewPlace = await fetchPlaceDetails(previewPlace.id);
+    }
+
+    if (requestId !== state.placeBoundaryRequestId) return;
+
+    state.selectedPlace = previewPlace;
+    placeMap.showPlace(previewPlace);
+  } catch {
+    if (requestId === state.placeBoundaryRequestId) {
+      placeMap.showUnavailable(previewPlace);
+    }
+  }
+}
 
 async function handlePlaceInput(query) {
   if (!query || query.trim().length < 2) {
@@ -376,16 +434,18 @@ async function handlePlaceInput(query) {
 function renderDropdown(results) {
   placeDropdown.innerHTML = "";
   dropdownIndex = -1;
+  dropdownPlaces = results;
 
   if (results.length === 0) {
     placeDropdown.classList.add("hidden");
     return;
   }
 
-  results.forEach((place) => {
+  results.forEach((place, index) => {
     const li = document.createElement("li");
     li.textContent = place.displayName;
     li.dataset.id = place.id;
+    li.dataset.index = String(index);
     li.addEventListener("mousedown", (e) => {
       e.preventDefault();
       selectPlace(place);
@@ -397,28 +457,21 @@ function renderDropdown(results) {
 }
 
 function selectPlace(place) {
-  state.placeId = place.id;
-  state.placeName = place.displayName;
-  placeInput.value = place.displayName;
-  placeIdInput.value = place.id;
-  placeDisplay.textContent = `Place ID: ${place.id}`;
+  setSelectedPlace(place);
   placeDropdown.classList.add("hidden");
 
   if (state.cards.length === 0) {
     setDocTitleDefault(place.displayName);
   }
 
+  refreshPlaceBoundaryPreview(place);
   refreshSpeciesAvailability({ resetToDefault: true });
 }
 
 placeInput.addEventListener("input", (e) => {
   if (!state.placeId || e.target.value === state.placeName) return;
 
-  state.placeId = null;
-  state.placeName = "";
-  state.speciesAvailability = null;
-  placeIdInput.value = "";
-  placeDisplay.textContent = "";
+  clearSelectedPlace();
   syncSpeciesPoolControls(null, { checkRare: false });
 });
 
@@ -439,7 +492,10 @@ placeInput.addEventListener("keydown", (e) => {
   } else if (e.key === "Enter" && dropdownIndex >= 0) {
     e.preventDefault();
     const li = items[dropdownIndex];
-    selectPlace({ id: Number(li.dataset.id), displayName: li.textContent });
+    selectPlace(dropdownPlaces[Number(li.dataset.index)] || {
+      id: Number(li.dataset.id),
+      displayName: li.textContent,
+    });
   } else if (e.key === "Escape") {
     placeDropdown.classList.add("hidden");
   }
@@ -596,12 +652,23 @@ form.addEventListener("submit", async (e) => {
   // Resolve place ID
   let placeId = state.placeId;
   const rawPlace = placeInput.value.trim();
-  const placeTitle = state.placeName || rawPlace;
+  let placeTitle = state.placeName || rawPlace;
 
   if (!placeId && rawPlace) {
     // If user typed a numeric ID directly
     if (/^\d+$/.test(rawPlace)) {
       placeId = Number(rawPlace);
+      try {
+        const directPlace = await fetchPlaceDetails(placeId);
+        setSelectedPlace(directPlace);
+        refreshPlaceBoundaryPreview(directPlace);
+        placeTitle = directPlace.displayName;
+      } catch {
+        const directPlace = { id: placeId, displayName: `Place ${placeId}` };
+        setSelectedPlace(directPlace);
+        placeMap.showUnavailable(directPlace);
+        placeTitle = directPlace.displayName;
+      }
     } else {
       showError("Please select a place from the dropdown suggestions.");
       return;

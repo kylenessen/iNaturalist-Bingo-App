@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iNaturalist Bingo Card Generator</title>
+  <link rel="stylesheet" href="lib/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -46,6 +47,19 @@
           <ul id="place-dropdown" class="dropdown hidden"></ul>
           <input type="hidden" id="place-id" value="">
           <small id="place-display"></small>
+          <details id="place-map-panel" class="place-map-panel hidden">
+            <summary>
+              <span>Place boundary</span>
+              <span id="place-map-title" class="place-map-title"></span>
+            </summary>
+            <div class="place-map-body">
+              <div class="place-map-actions">
+                <button type="button" id="place-map-fit" class="secondary-btn hidden">Fit boundary</button>
+              </div>
+              <div id="place-map" class="place-map hidden" aria-label="Selected place boundary"></div>
+              <small id="place-map-status" class="place-map-status" role="status" aria-live="polite"></small>
+            </div>
+          </details>
         </div>
 
         <div class="field">
@@ -127,6 +141,7 @@
 
   <script src="lib/jspdf.umd.min.js"></script>
   <script src="lib/html2canvas.min.js"></script>
+  <script src="lib/leaflet/leaflet.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -178,6 +178,87 @@ legend {
   margin-left: 0.5rem;
 }
 
+/* --- Place Boundary Map --- */
+.place-map-panel {
+  margin-top: 0.6rem;
+  border: 1px solid #cddbd0;
+  border-radius: 6px;
+  background: #fbfdfb;
+  overflow: hidden;
+}
+
+.place-map-panel summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.6rem 0.75rem;
+  color: #245524;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.place-map-title {
+  min-width: 0;
+  color: #555;
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-map-body {
+  padding: 0.75rem;
+  border-top: 1px solid #dce6de;
+}
+
+.place-map-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.secondary-btn {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #b9c8bd;
+  border-radius: 4px;
+  background: #fff;
+  color: #245524;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.secondary-btn:hover {
+  background: #e8f5e9;
+}
+
+.place-map {
+  width: 100%;
+  height: min(52vh, 360px);
+  min-height: 320px;
+  border: 1px solid #cfd8d2;
+  border-radius: 6px;
+  background: #eef3ef;
+  overflow: hidden;
+}
+
+.place-map-status {
+  margin-top: 0.45rem;
+}
+
+.leaflet-container {
+  font: inherit;
+}
+
+.leaflet-control-layers,
+.leaflet-bar {
+  border-radius: 4px;
+}
+
 /* --- Buttons --- */
 #generate-btn {
   display: block;
@@ -381,6 +462,18 @@ legend {
   fieldset { padding: 0.75rem; }
   .species-pool-controls { grid-template-columns: 1fr; }
   .species-pool-controls input[type="number"] { text-align: left; }
+  .place-map-panel summary {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+  .place-map-title {
+    text-align: left;
+    white-space: normal;
+  }
+  .place-map {
+    height: 280px;
+    min-height: 280px;
+  }
   .bingo-cell .common-name { font-size: 0.6em; }
   .bingo-cell .sci-name { font-size: 0.55em; }
 }
