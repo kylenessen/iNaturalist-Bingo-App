@@ -936,9 +936,9 @@ legend + * {
 }
 
 .site-footer a {
-  color: var(--brand-dark);
-  font-weight: 620;
-  text-decoration-color: rgba(52, 152, 219, 0.5);
+  color: var(--muted);
+  font-weight: 400;
+  text-decoration-color: rgba(111, 111, 111, 0.35);
   text-underline-offset: 0.18em;
 }
 
