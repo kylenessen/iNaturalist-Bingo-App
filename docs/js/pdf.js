@@ -16,6 +16,24 @@ const CELL_BORDER_PX = 2;
 const LABEL_LINE_HEIGHT = 1.12;
 const LABEL_LINES_PER_NAME = 2;
 const SCI_LABEL_BOTTOM_PAD_PX = 1;
+const PDF_FILENAME_FALLBACK = "inat_bingo_cards.pdf";
+const PDF_TITLE_FILENAME_MAX_LENGTH = 80;
+
+export function getPdfFilename(title) {
+  const safeTitle = String(title || "")
+    .trim()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\x00-\x1f\x7f<>:"\/\\|?*]+/g, " ")
+    .replace(/\s+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, PDF_TITLE_FILENAME_MAX_LENGTH)
+    .replace(/^_+|_+$/g, "");
+
+  if (!safeTitle) return PDF_FILENAME_FALLBACK;
+
+  return `inat_bingo_cards_${safeTitle}.pdf`;
+}
 
 function getProxiedImageUrl(imageUrl) {
   if (!imageUrl) return "";

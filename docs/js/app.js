@@ -5,7 +5,7 @@
 
 import { searchPlaces, fetchSpeciesPool, fetchPlaceDetails } from "./api.js";
 import { generateCards } from "./bingo.js";
-import { generatePdf } from "./pdf.js";
+import { generatePdf, getPdfFilename } from "./pdf.js";
 import { hasBoundaryGeometry, initPlaceMap } from "./place-map.js";
 import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
 import {
@@ -794,7 +794,7 @@ downloadBtn.addEventListener("click", async () => {
   downloadBtn.textContent = "Generating PDF…";
 
   try {
-    const title = docTitleInput.value || state.generatedPlaceName || "iNaturalist Bingo";
+    const title = docTitleInput.value.trim() || state.generatedPlaceName || "iNaturalist Bingo";
     const blob = await generatePdf(
       state.cards,
       state.gridSize,
@@ -809,7 +809,7 @@ downloadBtn.addEventListener("click", async () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "inat_bingo_cards.pdf";
+    a.download = getPdfFilename(title);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
