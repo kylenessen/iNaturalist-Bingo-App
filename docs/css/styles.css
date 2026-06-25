@@ -115,6 +115,10 @@ h1 {
   font-size: 0.95rem;
 }
 
+.app-info-blurb p + p {
+  margin-top: 0.85rem;
+}
+
 h2 {
   margin-bottom: 1rem;
   color: var(--brand-dark);
