@@ -62,9 +62,6 @@
               <span>Place boundary</span>
             </summary>
             <div class="place-map-body">
-              <div class="place-map-actions">
-                <button type="button" id="place-map-fit" class="secondary-btn hidden">Fit boundary</button>
-              </div>
               <div id="place-map" class="place-map hidden" aria-label="Selected place boundary"></div>
               <small id="place-map-status" class="place-map-status" role="status" aria-live="polite"></small>
             </div>
@@ -83,6 +80,7 @@
               <input type="radio" name="grid-size" value="3">
               <span class="grid-size-icon" aria-hidden="true">
                 <svg viewBox="0 0 18 18" focusable="false">
+                  <rect x="2" y="2" width="14" height="14" rx="1"></rect>
                   <path d="M6.33 2v14M11.67 2v14M2 6.33h14M2 11.67h14"></path>
                 </svg>
               </span>
@@ -92,6 +90,7 @@
               <input type="radio" name="grid-size" value="5" checked>
               <span class="grid-size-icon" aria-hidden="true">
                 <svg viewBox="0 0 18 18" focusable="false">
+                  <rect x="2" y="2" width="14" height="14" rx="1"></rect>
                   <path d="M4.8 2v14M7.6 2v14M10.4 2v14M13.2 2v14M2 4.8h14M2 7.6h14M2 10.4h14M2 13.2h14"></path>
                 </svg>
               </span>
@@ -101,6 +100,7 @@
               <input type="radio" name="grid-size" value="7">
               <span class="grid-size-icon" aria-hidden="true">
                 <svg viewBox="0 0 18 18" focusable="false">
+                  <rect x="2" y="2" width="14" height="14" rx="1"></rect>
                   <path d="M4 2v14M6.33 2v14M8.67 2v14M11 2v14M13.33 2v14M2 4h14M2 6.33h14M2 8.67h14M2 11h14M2 13.33h14"></path>
                 </svg>
               </span>
@@ -110,6 +110,7 @@
               <input type="radio" name="grid-size" value="9">
               <span class="grid-size-icon" aria-hidden="true">
                 <svg viewBox="0 0 18 18" focusable="false">
+                  <rect x="2" y="2" width="14" height="14" rx="1"></rect>
                   <path d="M3.56 2v14M5.33 2v14M7.11 2v14M8.89 2v14M10.67 2v14M12.44 2v14M14.22 2v14M2 3.56h14M2 5.33h14M2 7.11h14M2 8.89h14M2 10.67h14M2 12.44h14M2 14.22h14"></path>
                 </svg>
               </span>
@@ -140,9 +141,6 @@
           </div>
         </div>
 
-        <div class="field option-row-field">
-          <label class="inline-check"><input type="checkbox" id="free-square"><span>Include centre FREE square</span></label>
-        </div>
       </fieldset>
 
       <!-- Display Options -->
@@ -158,6 +156,9 @@
           </div>
           <div class="field option-row-field">
             <label class="inline-check"><input type="checkbox" id="sci-on" checked><span>Scientific name</span></label>
+          </div>
+          <div class="field option-row-field">
+            <label class="inline-check"><input type="checkbox" id="free-square"><span>Center free square</span></label>
           </div>
         </div>
         <div class="field">

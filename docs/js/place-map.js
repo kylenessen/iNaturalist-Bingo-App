@@ -8,8 +8,8 @@ const FIT_PADDING = [24, 24];
 const MAX_FIT_ZOOM = 16;
 
 const BOUNDARY_STYLE = {
-  color: "#555555",
-  fillColor: "#555555",
+  color: "#e74c3c",
+  fillColor: "#e74c3c",
   fillOpacity: 0.18,
   opacity: 1,
   weight: 3,
@@ -26,7 +26,6 @@ export function initPlaceMap({
   panelEl,
   mapEl,
   statusEl,
-  fitButton,
 }) {
   let map = null;
   let boundaryLayer = null;
@@ -144,13 +143,11 @@ export function initPlaceMap({
 
   function setMapVisible(visible) {
     mapEl.classList.toggle("hidden", !visible);
-    fitButton.classList.toggle("hidden", !visible);
   }
 
   panelEl.addEventListener("toggle", () => {
     if (panelEl.open) refreshSize();
   });
-  fitButton.addEventListener("click", fitBoundary);
 
   return {
     clear,

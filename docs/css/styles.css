@@ -16,6 +16,10 @@
   --brand: #5c5c5c;
   --brand-dark: #2f2f2f;
   --brand-soft: #eeeeee;
+  --blue: #3498db;
+  --blue-soft: #eaf4fc;
+  --red: #e74c3c;
+  --red-soft: #fdedeb;
   --danger: #4d4d4d;
   --warning: #5d5d5d;
 }
@@ -44,7 +48,7 @@ body {
 .app-header {
   margin-bottom: 1.25rem;
   padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--blue);
 }
 
 h1 {
@@ -81,7 +85,7 @@ legend {
   width: 100%;
   padding: 0;
   margin-bottom: 1rem;
-  color: var(--brand-dark);
+  color: var(--blue);
   font-size: 0.82rem;
   font-weight: 650;
   letter-spacing: 0.06em;
@@ -131,7 +135,7 @@ legend + * {
 .field input[type="number"]:focus,
 .field select:focus {
   outline: none;
-  border-color: var(--brand);
+  border-color: var(--blue);
   background: #ffffff;
   box-shadow: none;
 }
@@ -139,7 +143,7 @@ legend + * {
 .field input[type="range"] {
   width: 100%;
   padding: 0;
-  accent-color: var(--brand);
+  accent-color: var(--blue);
 }
 
 .inline-field-grid {
@@ -171,10 +175,10 @@ legend + * {
   gap: 0.5rem;
   align-items: flex-start;
   padding: 0.65rem 0.75rem;
-  border: 1px solid rgba(80, 80, 80, 0.35);
+  border: 1px solid rgba(231, 76, 60, 0.45);
   border-radius: 6px;
-  background: var(--surface-muted);
-  color: var(--brand-dark);
+  background: var(--red-soft);
+  color: #6d241d;
   font-weight: 520;
 }
 
@@ -189,8 +193,8 @@ legend + * {
   margin-right: 0.35rem;
   margin-top: 0.05rem;
   border-radius: 50%;
-  background: var(--warning);
-  color: var(--surface);
+  background: var(--red);
+  color: #fff;
   font-size: 0.85rem;
   font-weight: 800;
   line-height: 1;
@@ -219,8 +223,8 @@ legend + * {
 }
 
 .filter-option:has(.filter-toggle input:checked) {
-  border-color: var(--border-strong);
-  background: var(--brand-soft);
+  border-color: var(--blue);
+  background: var(--blue-soft);
 }
 
 .filter-toggle {
@@ -267,8 +271,8 @@ legend + * {
 }
 
 .filter-toggle input:checked + .toggle-track {
-  border-color: var(--brand-dark);
-  background: var(--brand);
+  border-color: var(--blue);
+  background: var(--blue);
 }
 
 .filter-toggle input:checked + .toggle-track::after {
@@ -276,7 +280,7 @@ legend + * {
 }
 
 .filter-toggle:focus-within .toggle-track {
-  outline: 1px solid var(--border-strong);
+  outline: 1px solid var(--blue);
   outline-offset: 2px;
 }
 
@@ -326,7 +330,7 @@ legend + * {
 
 .checkbox-chip:focus-within {
   outline: none;
-  border-color: var(--border-strong);
+  border-color: var(--blue);
 }
 
 .checkbox-chip input {
@@ -354,8 +358,8 @@ legend + * {
 }
 
 .checkbox-chip input:checked {
-  border-color: var(--brand);
-  background: var(--brand);
+  border-color: var(--blue);
+  background: var(--blue);
 }
 
 .checkbox-chip input:checked::before {
@@ -363,8 +367,8 @@ legend + * {
 }
 
 .checkbox-chip:has(input:checked) {
-  border-color: var(--border-strong);
-  background: var(--brand-soft);
+  border-color: var(--blue);
+  background: var(--blue-soft);
   color: var(--brand-dark);
 }
 
@@ -388,7 +392,7 @@ legend + * {
   width: 1.05rem;
   height: 1.05rem;
   margin: 0;
-  accent-color: var(--brand);
+  accent-color: var(--blue);
 }
 
 .inline-field-grid .field,
@@ -408,13 +412,13 @@ legend + * {
 }
 
 .option-row-field .inline-check:has(input:checked) {
-  border-color: var(--border-strong);
-  background: var(--brand-soft);
+  border-color: var(--blue);
+  background: var(--blue-soft);
 }
 
 .display-option-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -452,12 +456,12 @@ legend + * {
 }
 
 .grid-size-option:has(input:checked) {
-  border-color: var(--border-strong);
-  background: var(--brand-soft);
+  border-color: var(--blue);
+  background: var(--blue-soft);
 }
 
 .grid-size-option:focus-within {
-  border-color: var(--border-strong);
+  border-color: var(--blue);
 }
 
 .grid-size-icon {
@@ -470,7 +474,7 @@ legend + * {
 }
 
 .grid-size-option:has(input:checked) .grid-size-icon {
-  color: var(--brand-dark);
+  color: var(--blue);
 }
 
 .grid-size-icon svg {
@@ -511,7 +515,7 @@ legend + * {
 
 .dropdown li:hover,
 .dropdown li.active {
-  background: var(--brand-soft);
+  background: var(--blue-soft);
 }
 
 .dropdown li .place-type {
@@ -571,27 +575,6 @@ legend + * {
   border-top: 1px solid var(--border);
 }
 
-.place-map-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.5rem;
-}
-
-.secondary-btn {
-  padding: 0.4rem 0.7rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  background: var(--surface-strong);
-  color: var(--brand-dark);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 560;
-}
-
-.secondary-btn:hover {
-  background: var(--brand-soft);
-}
-
 .place-map {
   width: 100%;
   height: min(52vh, 360px);
@@ -614,10 +597,6 @@ legend + * {
   font: inherit;
 }
 
-.leaflet-tile {
-  filter: grayscale(1);
-}
-
 .leaflet-control-layers,
 .leaflet-bar {
   border-radius: 4px;
@@ -631,7 +610,7 @@ legend + * {
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  background: var(--brand-dark);
+  background: var(--blue);
   border: none;
   border-radius: 7px;
   box-shadow: none;
@@ -640,7 +619,7 @@ legend + * {
 }
 
 #generate-btn:hover {
-  background: #3a3a3a;
+  background: #2f89c5;
 }
 
 #generate-btn:disabled {
@@ -658,7 +637,7 @@ legend + * {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background: var(--brand);
+  background: var(--blue);
   border: none;
   border-radius: 7px;
   cursor: pointer;
@@ -666,7 +645,7 @@ legend + * {
 }
 
 .download-btn:hover {
-  background: #4a4a4a;
+  background: #2f89c5;
 }
 
 .download-btn:disabled {
@@ -683,9 +662,9 @@ legend + * {
 }
 
 .status {
-  background: var(--brand-soft);
-  color: var(--brand-dark);
-  border: 1px solid var(--border);
+  background: var(--blue-soft);
+  color: #1f5f89;
+  border: 1px solid rgba(52, 152, 219, 0.35);
 }
 
 .error {
@@ -713,7 +692,7 @@ legend + * {
   cursor: pointer;
 }
 
-.preview-nav button:hover:not(:disabled) { background: var(--brand-soft); }
+.preview-nav button:hover:not(:disabled) { background: var(--blue-soft); }
 .preview-nav button:disabled { color: #aaaaaa; cursor: default; }
 
 #card-counter {
@@ -846,7 +825,6 @@ legend + * {
   .filter-option-grid { grid-template-columns: 1fr; }
   .inline-field-grid { grid-template-columns: 1fr; }
   .grid-size-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .display-option-row { grid-template-columns: 1fr; }
   .checkbox-group { grid-template-columns: 1fr; }
   .preview-nav {
     flex-wrap: wrap;

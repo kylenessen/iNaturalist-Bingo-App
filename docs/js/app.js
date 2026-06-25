@@ -39,7 +39,6 @@ const placeDisplay = $("#place-display");
 const placeMapPanel = $("#place-map-panel");
 const placeMapEl = $("#place-map");
 const placeMapStatus = $("#place-map-status");
-const placeMapFit = $("#place-map-fit");
 const taxaEnabled = $("#taxa-filter-enabled");
 const taxaWrapper = $("#taxa-select-wrapper");
 const taxaCheckboxes = $("#taxa-checkboxes");
@@ -73,7 +72,6 @@ const placeMap = initPlaceMap({
   panelEl: placeMapPanel,
   mapEl: placeMapEl,
   statusEl: placeMapStatus,
-  fitButton: placeMapFit,
 });
 
 // ---- Helpers ----
