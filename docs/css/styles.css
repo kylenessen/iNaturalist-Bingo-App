@@ -830,6 +830,11 @@ legend + * {
 }
 
 /* --- Bingo Card Grid (Preview) --- */
+.bingo-card-frame {
+  width: 100%;
+  margin: 0 auto 1rem;
+}
+
 .bingo-card {
   display: grid;
   border: 2px solid var(--ink);
@@ -838,6 +843,10 @@ legend + * {
   max-width: 100%;
   overflow: hidden;
   box-shadow: none;
+}
+
+.bingo-card-frame .bingo-card {
+  margin-bottom: 0.45rem;
 }
 
 .bingo-cell {
@@ -887,6 +896,21 @@ legend + * {
 .bingo-card.grid-5 { grid-template-columns: repeat(5, 1fr); max-width: 600px; }
 .bingo-card.grid-7 { grid-template-columns: repeat(7, 1fr); max-width: 700px; }
 .bingo-card.grid-9 { grid-template-columns: repeat(9, 1fr); max-width: 720px; }
+
+.bingo-metadata-footer {
+  max-width: 100%;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+.bingo-metadata-footer.grid-3 { max-width: 480px; }
+.bingo-metadata-footer.grid-5 { max-width: 600px; }
+.bingo-metadata-footer.grid-7 { max-width: 700px; }
+.bingo-metadata-footer.grid-9 { max-width: 720px; }
 
 /* Loading skeleton */
 .bingo-cell img.loading {

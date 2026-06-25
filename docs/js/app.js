@@ -8,6 +8,7 @@ import { generateCards } from "./bingo.js";
 import { generatePdf, getPdfFilename } from "./pdf.js";
 import { hasBoundaryGeometry, initPlaceMap } from "./place-map.js";
 import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
+import { buildMetadataFooter } from "./metadata.js";
 import {
   RARE_OBSERVATION_THRESHOLD,
   getRarelyObservedCutoff,
@@ -19,6 +20,7 @@ const state = {
   placeId: null,
   placeName: "",
   generatedPlaceName: "",
+  generatedMetadataFooter: "",
   cards: [],       // Array of grids
   gridSize: 5,
   currentCard: 0,
@@ -27,7 +29,12 @@ const state = {
   rareWarningRequestId: 0,
   placeBoundaryRequestId: 0,
   selectedPlace: null,
-  options: { photoOn: true, commonOn: true, sciOn: true },
+  options: {
+    photoOn: true,
+    commonOn: true,
+    sciOn: true,
+    metadataFooterOn: false,
+  },
 };
 
 // ---- DOM references ----
@@ -60,6 +67,7 @@ const freeSquareCheck = $("#free-square");
 const photoOnCheck = $("#photo-on");
 const commonOnCheck = $("#common-on");
 const sciOnCheck = $("#sci-on");
+const metadataFooterCheck = $("#metadata-footer");
 const docTitleInput = $("#doc-title");
 const generateBtn = $("#generate-btn");
 const form = $("#bingo-form");
@@ -588,12 +596,14 @@ function onDisplayToggle() {
   state.options.photoOn = photoOnCheck.checked;
   state.options.commonOn = commonOnCheck.checked;
   state.options.sciOn = sciOnCheck.checked;
+  state.options.metadataFooterOn = metadataFooterCheck.checked;
   if (state.cards.length > 0) renderCurrentCard();
 }
 
 photoOnCheck.addEventListener("change", onDisplayToggle);
 commonOnCheck.addEventListener("change", onDisplayToggle);
 sciOnCheck.addEventListener("change", onDisplayToggle);
+metadataFooterCheck.addEventListener("change", onDisplayToggle);
 
 // ---- Card Preview Rendering ----
 function renderCurrentCard() {
@@ -601,6 +611,9 @@ function renderCurrentCard() {
   if (!grid) return;
 
   cardContainer.innerHTML = "";
+
+  const frameEl = document.createElement("div");
+  frameEl.className = "bingo-card-frame";
 
   const cardEl = document.createElement("div");
   cardEl.className = `bingo-card grid-${state.gridSize}`;
@@ -645,7 +658,16 @@ function renderCurrentCard() {
     }
   }
 
-  cardContainer.appendChild(cardEl);
+  frameEl.appendChild(cardEl);
+
+  if (state.options.metadataFooterOn && state.generatedMetadataFooter) {
+    const footerEl = document.createElement("div");
+    footerEl.className = `bingo-metadata-footer grid-${state.gridSize}`;
+    footerEl.textContent = state.generatedMetadataFooter;
+    frameEl.appendChild(footerEl);
+  }
+
+  cardContainer.appendChild(frameEl);
   updateNav();
 }
 
@@ -771,7 +793,20 @@ form.addEventListener("submit", async (e) => {
     state.options.photoOn = photoOnCheck.checked;
     state.options.commonOn = commonOnCheck.checked;
     state.options.sciOn = sciOnCheck.checked;
+    state.options.metadataFooterOn = metadataFooterCheck.checked;
     state.generatedPlaceName = placeTitle;
+    state.generatedMetadataFooter = buildMetadataFooter({
+      createdAt: new Date(),
+      placeName: placeTitle,
+      placeId,
+      gridSize,
+      numCards,
+      speciesPoolSize: availableSpeciesSettings.value,
+      freeSquare,
+      selectedMonths,
+      selectedIconicTaxa,
+      baseSeed,
+    });
     setDocTitleDefault(placeTitle);
 
     renderCurrentCard();
@@ -800,6 +835,7 @@ downloadBtn.addEventListener("click", async () => {
       state.gridSize,
       state.options,
       title,
+      state.generatedMetadataFooter,
       (current, total) => {
         downloadBtn.textContent = `Generating PDF… (${current}/${total})`;
       }
