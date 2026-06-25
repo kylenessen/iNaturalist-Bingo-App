@@ -51,10 +51,15 @@ function formatPlace(placeName, placeId) {
   return "unknown";
 }
 
+function getLocationLabel(locationKind) {
+  return locationKind && locationKind !== "place" ? "Location" : "Place";
+}
+
 export function buildMetadataFooter({
   createdAt,
   placeName,
   placeId,
+  locationKind = "place",
   gridSize,
   numCards,
   speciesPoolSize,
@@ -63,9 +68,10 @@ export function buildMetadataFooter({
   selectedIconicTaxa,
   baseSeed,
 }) {
+  const locationLabel = getLocationLabel(locationKind);
   const parts = [
     `Created ${formatMetadataDate(createdAt)}`,
-    `Place ${formatPlace(placeName, placeId)}`,
+    `${locationLabel} ${formatPlace(placeName, placeId)}`,
     `Grid ${gridSize} x ${gridSize}`,
     `Cards ${numCards}`,
     `Species pool ${speciesPoolSize}`,

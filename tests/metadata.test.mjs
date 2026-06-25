@@ -40,3 +40,20 @@ assert.equal(
   }),
   "Created 2026-06-24 09:07 | Place Place 7 (ID 7) | Grid 3 x 3 | Cards 1 | Species pool 25 | Free square off | Filters none"
 );
+
+assert.equal(
+  buildMetadataFooter({
+    createdAt,
+    placeName: "Custom circle boundary. 2.5 km radius.",
+    placeId: null,
+    locationKind: "circle",
+    gridSize: 5,
+    numCards: 2,
+    speciesPoolSize: 75,
+    freeSquare: false,
+    selectedMonths: null,
+    selectedIconicTaxa: null,
+    baseSeed: null,
+  }),
+  "Created 2026-06-24 09:07 | Location Custom circle boundary. 2.5 km radius. | Grid 5 x 5 | Cards 2 | Species pool 75 | Free square off | Filters none"
+);
