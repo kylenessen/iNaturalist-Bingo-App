@@ -98,11 +98,75 @@
           <ul id="place-dropdown" class="dropdown hidden"></ul>
           <input type="hidden" id="place-id" value="">
           <small id="place-display"></small>
+          <div class="boundary-action-row">
+            <button type="button" id="draw-boundary-btn" class="draw-boundary-button">
+              <span aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false">
+                  <rect x="3" y="4" width="14" height="12" rx="1"></rect>
+                  <circle cx="10" cy="10" r="3.5"></circle>
+                </svg>
+              </span>
+              <span>Draw boundary</span>
+            </button>
+            <button
+              type="button"
+              id="boundary-help-toggle"
+              class="boundary-help-toggle"
+              aria-label="Custom boundary details"
+              aria-expanded="false"
+              aria-controls="boundary-help"
+            >?</button>
+          </div>
+          <div id="boundary-help" class="boundary-help hidden">
+            <p>
+              Custom boundaries support rectangles and circles because iNaturalist
+              can search those shapes directly. Freeform polygons are not available
+              here because iNaturalist species counts do not accept custom polygon
+              GeoJSON. For an exact polygon, create a place on
+              <a href="https://www.inaturalist.org/places/new" target="_blank" rel="noopener">iNaturalist</a>,
+              then select that place here.
+            </p>
+          </div>
           <details id="place-map-panel" class="place-map-panel hidden">
             <summary>
-              <span>Place boundary</span>
+              <span id="place-map-summary-label">Place boundary</span>
             </summary>
             <div class="place-map-body">
+              <div id="boundary-draw-tools" class="boundary-draw-tools hidden">
+                <div class="boundary-map-search">
+                  <label for="boundary-map-search-input">Find a place on the map</label>
+                  <div class="boundary-map-search-controls">
+                    <input type="text" id="boundary-map-search-input" placeholder="Search map…">
+                    <button type="button" id="boundary-map-search-btn">Search</button>
+                  </div>
+                  <ul id="boundary-map-search-results" class="dropdown hidden"></ul>
+                </div>
+                <div class="boundary-tool-row" aria-label="Boundary drawing tools">
+                  <button type="button" id="draw-rectangle-tool" class="boundary-tool-button">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <rect x="3.5" y="5" width="13" height="10" rx="1"></rect>
+                      </svg>
+                    </span>
+                    <span>Rectangle</span>
+                  </button>
+                  <button type="button" id="draw-circle-tool" class="boundary-tool-button">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <circle cx="10" cy="10" r="6"></circle>
+                      </svg>
+                    </span>
+                    <span>Circle</span>
+                  </button>
+                  <button type="button" id="clear-boundary-drawing" class="boundary-tool-button secondary">
+                    Clear
+                  </button>
+                </div>
+                <div class="boundary-draw-actions">
+                  <button type="button" id="use-boundary-btn" disabled>Use boundary</button>
+                  <button type="button" id="cancel-boundary-btn">Cancel</button>
+                </div>
+              </div>
               <div id="place-map" class="place-map hidden" aria-label="Selected place boundary"></div>
               <small id="place-map-status" class="place-map-status" role="status" aria-live="polite"></small>
             </div>

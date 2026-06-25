@@ -632,6 +632,173 @@ legend + * {
   margin-left: 0.5rem;
 }
 
+/* --- Custom Boundary Controls --- */
+.boundary-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+}
+
+.draw-boundary-button,
+.boundary-tool-button,
+.boundary-draw-actions button,
+.boundary-map-search-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface-strong);
+  color: var(--brand-dark);
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-weight: 620;
+  line-height: 1.1;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.draw-boundary-button {
+  min-height: 2.8rem;
+  padding: 0.65rem 0.95rem;
+  font-size: 0.98rem;
+}
+
+.draw-boundary-button svg,
+.boundary-tool-button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.draw-boundary-button:hover,
+.boundary-tool-button:hover,
+.boundary-draw-actions button:hover,
+.boundary-map-search-controls button:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  transform: translateY(-1px);
+}
+
+.boundary-help-toggle {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--blue);
+  border-radius: 50%;
+  background: var(--surface-strong);
+  color: var(--blue);
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+}
+
+.boundary-help-toggle:hover,
+.boundary-help-toggle[aria-expanded="true"] {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.boundary-help {
+  margin-top: 0.65rem;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 7px;
+  background: var(--surface-strong);
+  color: var(--brand-dark);
+  font-size: 0.9rem;
+}
+
+.boundary-help a {
+  color: var(--blue);
+  font-weight: 620;
+}
+
+.boundary-draw-tools {
+  display: grid;
+  gap: 0.72rem;
+  margin-bottom: 0.75rem;
+}
+
+.boundary-map-search {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.boundary-map-search label {
+  color: var(--brand-dark);
+  font-size: 0.88rem;
+  font-weight: 560;
+}
+
+.boundary-map-search-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+}
+
+.boundary-map-search-controls button,
+.boundary-draw-actions button {
+  min-height: 2.35rem;
+  padding: 0.55rem 0.75rem;
+}
+
+.boundary-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.boundary-tool-button {
+  min-height: 2.3rem;
+  padding: 0.52rem 0.75rem;
+}
+
+.boundary-tool-button.secondary {
+  color: var(--muted);
+}
+
+.boundary-tool-button.active {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.boundary-draw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#use-boundary-btn {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #ffffff;
+}
+
+#use-boundary-btn:hover {
+  background: #2f89c5;
+}
+
+#use-boundary-btn:disabled {
+  border-color: var(--border);
+  background: var(--surface-muted);
+  color: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* --- Place Boundary Map --- */
 .place-map-panel {
   margin-top: 0.6rem;
@@ -691,6 +858,10 @@ legend + * {
   border-radius: 6px;
   background: var(--surface-muted);
   overflow: hidden;
+}
+
+.place-map.is-drawing {
+  cursor: crosshair;
 }
 
 .place-map-status {
@@ -960,6 +1131,17 @@ legend + * {
   .inline-field-grid { grid-template-columns: 1fr; }
   .grid-size-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .checkbox-group { grid-template-columns: 1fr; }
+  .boundary-action-row,
+  .boundary-draw-actions {
+    align-items: stretch;
+  }
+  .draw-boundary-button,
+  .boundary-draw-actions button {
+    width: 100%;
+  }
+  .boundary-map-search-controls {
+    grid-template-columns: 1fr;
+  }
   .preview-nav {
     flex-wrap: wrap;
     gap: 0.65rem;

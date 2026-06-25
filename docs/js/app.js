@@ -7,6 +7,10 @@ import { searchPlaces, fetchSpeciesPool, fetchPlaceDetails } from "./api.js";
 import { generateCards } from "./bingo.js";
 import { generatePdf } from "./pdf.js";
 import { hasBoundaryGeometry, initPlaceMap } from "./place-map.js";
+import {
+  createPlaceScope,
+  getLocationScopeSummary,
+} from "./location-scope.js";
 import { ICONIC_TAXA, MONTH_NAMES, DEBOUNCE_MS } from "./config.js";
 import {
   RARE_OBSERVATION_THRESHOLD,
@@ -27,6 +31,7 @@ const state = {
   rareWarningRequestId: 0,
   placeBoundaryRequestId: 0,
   selectedPlace: null,
+  locationScope: null,
   options: { photoOn: true, commonOn: true, sciOn: true },
 };
 
@@ -38,9 +43,22 @@ const placeInput = $("#place-input");
 const placeDropdown = $("#place-dropdown");
 const placeIdInput = $("#place-id");
 const placeDisplay = $("#place-display");
+const drawBoundaryBtn = $("#draw-boundary-btn");
+const boundaryHelpToggle = $("#boundary-help-toggle");
+const boundaryHelp = $("#boundary-help");
 const placeMapPanel = $("#place-map-panel");
+const placeMapSummaryLabel = $("#place-map-summary-label");
 const placeMapEl = $("#place-map");
 const placeMapStatus = $("#place-map-status");
+const boundaryDrawTools = $("#boundary-draw-tools");
+const boundaryMapSearchInput = $("#boundary-map-search-input");
+const boundaryMapSearchBtn = $("#boundary-map-search-btn");
+const boundaryMapSearchResults = $("#boundary-map-search-results");
+const drawRectangleTool = $("#draw-rectangle-tool");
+const drawCircleTool = $("#draw-circle-tool");
+const clearBoundaryDrawingBtn = $("#clear-boundary-drawing");
+const useBoundaryBtn = $("#use-boundary-btn");
+const cancelBoundaryBtn = $("#cancel-boundary-btn");
 const taxaEnabled = $("#taxa-filter-enabled");
 const taxaWrapper = $("#taxa-select-wrapper");
 const taxaCheckboxes = $("#taxa-checkboxes");
@@ -74,6 +92,7 @@ const placeMap = initPlaceMap({
   panelEl: placeMapPanel,
   mapEl: placeMapEl,
   statusEl: placeMapStatus,
+  summaryLabelEl: placeMapSummaryLabel,
 });
 
 // ---- Helpers ----
@@ -248,7 +267,7 @@ function syncSpeciesPoolControls(value = null, options = {}) {
       `Choose a smaller grid or broader filters. ` +
       `This card needs ${settings.requiredSpecies} species.`
     );
-  } else if (!state.placeId) {
+  } else if (!state.locationScope) {
     hideTopNWarning();
   } else if (checkRare) {
     debouncedRefreshRareSpeciesWarning();
@@ -260,7 +279,7 @@ function syncSpeciesPoolControls(value = null, options = {}) {
 async function refreshRareSpeciesWarning() {
   const settings = getCurrentSpeciesPoolSettings(topNInput.value);
 
-  if (!state.placeId || !settings.hasEnoughSpecies) {
+  if (!state.locationScope || !settings.hasEnoughSpecies) {
     return;
   }
 
@@ -269,7 +288,7 @@ async function refreshRareSpeciesWarning() {
 
   try {
     const speciesPool = await fetchSpeciesPool(
-      state.placeId,
+      state.locationScope,
       settings.value,
       selectedMonths,
       selectedIconicTaxa
@@ -307,7 +326,7 @@ async function refreshSpeciesAvailability(options = {}) {
   state.rareWarningRequestId += 1;
   hideTopNWarning();
 
-  if (!state.placeId) {
+  if (!state.locationScope) {
     state.speciesAvailability = null;
     syncSpeciesPoolControls(resetToDefault ? null : topNInput.value, {
       checkRare: false,
@@ -326,7 +345,7 @@ async function refreshSpeciesAvailability(options = {}) {
 
   try {
     const pool = await fetchSpeciesPool(
-      state.placeId,
+      state.locationScope,
       defaultSettings.defaultSpecies,
       selectedMonths,
       selectedIconicTaxa
@@ -396,11 +415,16 @@ function initFilters() {
 // ---- Place Type-Ahead ----
 let dropdownIndex = -1;
 let dropdownPlaces = [];
+let pendingCustomBoundary = null;
+let boundarySearchIndex = -1;
+let boundarySearchPlaces = [];
+let boundarySearchRequestId = 0;
 
 function setSelectedPlace(place) {
   state.placeId = place.id;
   state.placeName = place.displayName;
   state.selectedPlace = place;
+  state.locationScope = createPlaceScope(place);
   placeInput.value = place.displayName;
   placeIdInput.value = place.id;
   placeDisplay.textContent = `Place ID: ${place.id}`;
@@ -410,11 +434,42 @@ function clearSelectedPlace() {
   state.placeId = null;
   state.placeName = "";
   state.selectedPlace = null;
+  state.locationScope = null;
   state.speciesAvailability = null;
   state.placeBoundaryRequestId += 1;
   placeIdInput.value = "";
   placeDisplay.textContent = "";
+  pendingCustomBoundary = null;
   placeMap.clear();
+}
+
+function selectCustomBoundary(locationScope) {
+  state.placeId = null;
+  state.placeName = "";
+  state.selectedPlace = null;
+  state.locationScope = locationScope;
+  state.speciesAvailability = null;
+  state.placeBoundaryRequestId += 1;
+  placeInput.value = "";
+  placeIdInput.value = "";
+  placeDisplay.textContent = getLocationScopeSummary(locationScope);
+  pendingCustomBoundary = null;
+  closeBoundaryDrawingTools();
+  placeMap.showBoundary(locationScope);
+
+  if (state.cards.length === 0) {
+    setDocTitleDefault(locationScope.label);
+  }
+
+  refreshSpeciesAvailability({ resetToDefault: true });
+}
+
+function closeBoundaryDrawingTools() {
+  boundaryDrawTools.classList.add("hidden");
+  boundaryMapSearchResults.classList.add("hidden");
+  boundaryMapSearchInput.value = "";
+  useBoundaryBtn.disabled = true;
+  pendingCustomBoundary = null;
 }
 
 async function refreshPlaceBoundaryPreview(place) {
@@ -479,6 +534,8 @@ function renderDropdown(results) {
 }
 
 function selectPlace(place) {
+  closeBoundaryDrawingTools();
+  placeMap.cancelDrawing();
   setSelectedPlace(place);
   placeDropdown.classList.add("hidden");
 
@@ -491,8 +548,9 @@ function selectPlace(place) {
 }
 
 placeInput.addEventListener("input", (e) => {
-  if (!state.placeId || e.target.value === state.placeName) return;
+  if (!state.locationScope || e.target.value === state.placeName) return;
 
+  closeBoundaryDrawingTools();
   clearSelectedPlace();
   syncSpeciesPoolControls(null, { checkRare: false });
 });
@@ -529,6 +587,181 @@ function updateDropdownHighlight(items) {
 
 placeInput.addEventListener("blur", () => {
   setTimeout(() => placeDropdown.classList.add("hidden"), 150);
+});
+
+// ---- Custom Boundary Drawing ----
+function setBoundaryToolActive(tool) {
+  drawRectangleTool.classList.toggle("active", tool === "rectangle");
+  drawCircleTool.classList.toggle("active", tool === "circle");
+}
+
+function openCustomBoundaryDrawing() {
+  closeBoundaryDrawingTools();
+  boundaryDrawTools.classList.remove("hidden");
+  setBoundaryToolActive(null);
+  placeMap.openDrawing({
+    onBoundaryChange(boundary) {
+      pendingCustomBoundary = boundary;
+      useBoundaryBtn.disabled = !boundary;
+      if (boundary) setBoundaryToolActive(null);
+    },
+  });
+}
+
+function restoreCurrentBoundaryPreview() {
+  if (state.locationScope?.kind === "rectangle" || state.locationScope?.kind === "circle") {
+    placeMap.showBoundary(state.locationScope);
+    return;
+  }
+
+  if (state.selectedPlace) {
+    refreshPlaceBoundaryPreview(state.selectedPlace);
+    return;
+  }
+
+  placeMap.clear();
+}
+
+function renderBoundarySearchResults(results) {
+  boundaryMapSearchResults.innerHTML = "";
+  boundarySearchIndex = -1;
+  boundarySearchPlaces = results;
+
+  if (results.length === 0) {
+    boundaryMapSearchResults.classList.add("hidden");
+    return;
+  }
+
+  results.forEach((place, index) => {
+    const li = document.createElement("li");
+    li.textContent = place.displayName;
+    li.dataset.index = String(index);
+    li.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      focusBoundaryMapPlace(place);
+    });
+    boundaryMapSearchResults.appendChild(li);
+  });
+
+  boundaryMapSearchResults.classList.remove("hidden");
+}
+
+async function handleBoundaryMapSearch(query) {
+  if (!query || query.trim().length < 2) {
+    boundaryMapSearchResults.classList.add("hidden");
+    return;
+  }
+
+  const requestId = ++boundarySearchRequestId;
+
+  try {
+    const results = await searchPlaces(query);
+    if (requestId !== boundarySearchRequestId) return;
+    renderBoundarySearchResults(results);
+  } catch {
+    if (requestId === boundarySearchRequestId) {
+      boundaryMapSearchResults.classList.add("hidden");
+    }
+  }
+}
+
+async function focusBoundaryMapPlace(place) {
+  boundaryMapSearchResults.classList.add("hidden");
+  boundaryMapSearchInput.value = place.displayName;
+
+  let focusPlace = place;
+
+  try {
+    if (!hasBoundaryGeometry(focusPlace)) {
+      focusPlace = await fetchPlaceDetails(focusPlace.id);
+    }
+  } catch {
+    // The map can still use place.location when details are unavailable.
+  }
+
+  placeMap.focusPlace(focusPlace);
+}
+
+function updateBoundarySearchHighlight(items) {
+  items.forEach((li, i) => li.classList.toggle("active", i === boundarySearchIndex));
+}
+
+boundaryHelpToggle.addEventListener("click", () => {
+  const isExpanded = boundaryHelpToggle.getAttribute("aria-expanded") === "true";
+
+  boundaryHelpToggle.setAttribute("aria-expanded", String(!isExpanded));
+  boundaryHelp.classList.toggle("hidden", isExpanded);
+});
+
+drawBoundaryBtn.addEventListener("click", openCustomBoundaryDrawing);
+
+drawRectangleTool.addEventListener("click", () => {
+  setBoundaryToolActive("rectangle");
+  placeMap.startDrawTool("rectangle");
+});
+
+drawCircleTool.addEventListener("click", () => {
+  setBoundaryToolActive("circle");
+  placeMap.startDrawTool("circle");
+});
+
+clearBoundaryDrawingBtn.addEventListener("click", () => {
+  setBoundaryToolActive(null);
+  placeMap.clearDrawing();
+});
+
+useBoundaryBtn.addEventListener("click", () => {
+  if (!pendingCustomBoundary) return;
+  selectCustomBoundary(pendingCustomBoundary);
+});
+
+cancelBoundaryBtn.addEventListener("click", () => {
+  setBoundaryToolActive(null);
+  placeMap.cancelDrawing();
+  closeBoundaryDrawingTools();
+  restoreCurrentBoundaryPreview();
+});
+
+boundaryMapSearchBtn.addEventListener("click", () => {
+  handleBoundaryMapSearch(boundaryMapSearchInput.value);
+});
+
+boundaryMapSearchInput.addEventListener(
+  "input",
+  debounce((e) => handleBoundaryMapSearch(e.target.value), DEBOUNCE_MS)
+);
+
+boundaryMapSearchInput.addEventListener("keydown", (e) => {
+  const items = boundaryMapSearchResults.querySelectorAll("li");
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    if (items.length > 0 && boundarySearchIndex >= 0) {
+      const li = items[boundarySearchIndex];
+      focusBoundaryMapPlace(boundarySearchPlaces[Number(li.dataset.index)]);
+      return;
+    }
+    handleBoundaryMapSearch(boundaryMapSearchInput.value);
+    return;
+  }
+
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    boundarySearchIndex = Math.min(boundarySearchIndex + 1, items.length - 1);
+    updateBoundarySearchHighlight(items);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    boundarySearchIndex = Math.max(boundarySearchIndex - 1, 0);
+    updateBoundarySearchHighlight(items);
+  } else if (e.key === "Escape") {
+    boundaryMapSearchResults.classList.add("hidden");
+  }
+});
+
+boundaryMapSearchInput.addEventListener("blur", () => {
+  setTimeout(() => boundaryMapSearchResults.classList.add("hidden"), 150);
 });
 
 // ---- Filter toggles ----
@@ -672,34 +905,36 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   hideMessages();
 
-  // Resolve place ID
-  let placeId = state.placeId;
+  // Resolve the selected place or custom boundary.
+  let locationScope = state.locationScope;
   const rawPlace = placeInput.value.trim();
-  let placeTitle = state.placeName || rawPlace;
+  let placeTitle = locationScope?.label || state.placeName || rawPlace;
 
-  if (!placeId && rawPlace) {
+  if (!locationScope && rawPlace) {
     // If user typed a numeric ID directly
     if (/^\d+$/.test(rawPlace)) {
-      placeId = Number(rawPlace);
+      const placeId = Number(rawPlace);
       try {
         const directPlace = await fetchPlaceDetails(placeId);
         setSelectedPlace(directPlace);
         refreshPlaceBoundaryPreview(directPlace);
+        locationScope = state.locationScope;
         placeTitle = directPlace.displayName;
       } catch {
         const directPlace = { id: placeId, displayName: `Place ${placeId}` };
         setSelectedPlace(directPlace);
         placeMap.showUnavailable(directPlace);
+        locationScope = state.locationScope;
         placeTitle = directPlace.displayName;
       }
     } else {
-      showError("Please select a place from the dropdown suggestions.");
+      showError("Please select a place from the dropdown or draw a boundary.");
       return;
     }
   }
 
-  if (!placeId) {
-    showError("Please enter a place name or ID.");
+  if (!locationScope) {
+    showError("Please select a place or draw a boundary.");
     return;
   }
 
@@ -723,7 +958,7 @@ form.addEventListener("submit", async (e) => {
     showStatus("Fetching species list from iNaturalist…");
 
     const speciesPool = await fetchSpeciesPool(
-      placeId,
+      locationScope,
       topN,
       selectedMonths,
       selectedIconicTaxa
@@ -737,14 +972,14 @@ form.addEventListener("submit", async (e) => {
     });
 
     if (!species || species.length === 0) {
-      showError("No species found for this place with the selected filters.");
+      showError("No species found for this location with the selected filters.");
       return;
     }
 
     const cellsNeeded = gridSize * gridSize - (freeSquare ? 1 : 0);
     if (species.length < cellsNeeded) {
       showError(
-        `This place has ${species.length} species with the selected filters. ` +
+        `This location has ${species.length} species with the selected filters. ` +
         `A ${gridSize}×${gridSize} card needs ${cellsNeeded}.`
       );
       return;
