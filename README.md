@@ -1,91 +1,13 @@
-# iNaturalist Bingo App
+# iNaturalist Bingo Cards
 
-A client-side web app for generating printable bingo cards from iNaturalist
-observation data. The current app lives in `docs/` and runs as static HTML,
-CSS, and JavaScript. It can be hosted directly on GitHub Pages.
+I teach natural history and field studies at the college level. A component of my classes is introducing students to iNaturalist, which I think is one of the best things I can give someone during the few days I have with them in the field. Most students stop using the platform after the class, but a few persist, and in the meantime, a lot of observations are generated.
 
-Live app after GitHub Pages is enabled:
+I was looking for a way to motivate my students to make observations without creating negative incentives. I landed on the idea of a bingo game that can be played in the background of our activities. Winning bingo gets you a small prize, separate from the grade.
 
-https://kylenessen.github.io/iNaturalist-Bingo-App/
+Students love this, and it is a guaranteed hit when you can point out a coveted species on someone's bingo card. Organisms that were once easily overlooked are now highly sought after. It is enough to keep most of the class looking all the time, and a few students end up producing many more observations than they otherwise would.
 
-The old Streamlit app is deprecated. Running `streamlit run main.py` now shows
-a migration notice that points users to the static app.
+I made this little app for myself, but enough people kept asking for the link that I thought I should build it out properly. I hope it is useful to you and whatever group you are sharing these bingo cards with.
 
-## Features
+[Use the app](https://kylenessen.github.io/iNaturalist-Bingo-App/)
 
-- Real species data from the public iNaturalist API.
-- Grid sizes of 3x3, 5x5, 7x7, and 9x9.
-- Optional photos, common names, scientific names, and center FREE square.
-- Category and month filters for focused field trips.
-- Collapsible place boundary preview with map and aerial basemaps.
-- Custom rectangle and circle boundaries drawn on an interactive map.
-- Client-side PDF generation with `html2canvas` and `jsPDF`.
-- No API keys and no backend server.
-
-## Local Development
-
-Serve the static app from the `docs/` folder.
-
-```bash
-uv run python -m http.server 8765 --directory docs
-```
-
-Then open:
-
-http://127.0.0.1:8765
-
-The app has no build step. Edit files under `docs/`, then refresh the browser.
-
-## GitHub Pages
-
-The app is designed to be served from the repository `docs/` folder.
-
-In GitHub, open the repository settings. Go to Pages. Set the source to deploy
-from a branch. Choose the primary branch, then choose the `/docs` folder.
-
-After GitHub Pages finishes publishing, the app should be available at:
-
-https://kylenessen.github.io/iNaturalist-Bingo-App/
-
-## Project Structure
-
-- `docs/index.html` contains the static app shell.
-- `docs/css/styles.css` contains app and PDF capture styles.
-- `docs/js/app.js` wires the UI together.
-- `docs/js/api.js` talks to the iNaturalist API.
-- `docs/js/location-scope.js` converts places and custom boundaries into API filters.
-- `docs/js/place-map.js` renders selected place boundaries with Leaflet.
-- `docs/js/species-settings.js` calculates species pool defaults and warnings.
-- `docs/js/bingo.js` builds deterministic bingo grids.
-- `docs/js/pdf.js` renders PDF pages in the browser.
-- `docs/lib/` contains vendored browser PDF dependencies.
-- `main.py` is only a deprecation notice for old Streamlit users.
-
-The remaining Python modules are legacy support code from the original app.
-They are no longer the primary product surface.
-
-## Checks
-
-```bash
-node --check docs/js/app.js
-node --check docs/js/api.js
-node --check docs/js/bingo.js
-node --check docs/js/config.js
-node --check docs/js/location-scope.js
-node --check docs/js/pdf.js
-node --check docs/js/place-map.js
-node --check docs/js/species-settings.js
-node --test docs/js/species-settings.test.mjs docs/js/location-scope.test.mjs
-node tests/pdf-layout.test.mjs
-uv run black main.py ui.py config.py pdf_renderer.py
-uv run flake8 main.py ui.py config.py pdf_renderer.py
-```
-
-## License
-
-This project is released under the MIT License.
-
-## Acknowledgments
-
-Thanks to iNaturalist and its community for the observation data that makes
-this app useful for nature education and field trips.
+This repo contains the static site for the app. The app lives in `docs/` so GitHub Pages can serve it directly.
